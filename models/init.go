@@ -19,8 +19,10 @@ func ConnectDatabase() {
 		" dbname=" + os.Getenv("POSTGRES_DB") +
 		" port=" + os.Getenv("POSTGRES_PORT") +
 		" sslmode=disable TimeZone=" + os.Getenv("TIME_ZONE")
+	mode := os.Getenv("APP_MODE")
+
 	loggerMode := logger.Default.LogMode(logger.Info)
-	if os.Getenv("DEBUG") != "1" {
+	if mode != "debug" {
 		loggerMode = logger.Default.LogMode(logger.Silent)
 	}
 
@@ -30,6 +32,12 @@ func ConnectDatabase() {
 	if err != nil {
 		panic("Failed to connect to database!")
 	}
+	database.AutoMigrate(
+		&Organization{},
+		&Code{},
+		&AuthorizationToken{},
+	)
+	fmt.Println("Database migrated successfully")
 
 	DB = database
 

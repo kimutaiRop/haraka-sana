@@ -34,11 +34,13 @@ func setupRouter() *gin.Engine {
 func main() {
 	godotenv.Load()
 	port := ":8080"
-
 	rand.Seed(time.Now().UnixNano())
+	mode := os.Getenv("APP_MODE")
+	gin.SetMode(mode)
 	models.ConnectDatabase()
 	models.SeedDatabase()
 	r := setupRouter()
+
 	fmt.Println("staring at http://0.0.0.0" + port)
 	r.Run(port)
 }
