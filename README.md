@@ -19,3 +19,7 @@ at 1915HRS
     - `docker compose up`
   2. Start the web server
     - go run .
+
+## Features
+
+* [ ] Impliment Ouath Authorization & Authentication
