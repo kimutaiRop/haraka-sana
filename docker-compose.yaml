@@ -1,0 +1,23 @@
+services:
+  db:
+    image: postgres
+    restart: always
+    user: postgres
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    env_file:
+      - .env
+    expose:
+      - 5432
+    ports:
+      - 5432:5432
+
+  adminer:
+    image: adminer:latest
+    container_name: haraka_adminer
+    restart: always
+    ports:
+      - 8081:8080
+
+volumes:
+  db-data:
