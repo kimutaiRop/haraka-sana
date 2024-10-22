@@ -12,31 +12,46 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func errorPage() string {
+	return "/auth/error"
+}
+
 func AuthorizeCode(c *gin.Context) {
 	query := c.Request.URL.Query()
 	redirect_uri := query.Get("redirect_uri")
-
+	if redirect_uri == "" {
+		c.Redirect(http.StatusFound, errorPage()+"?error=redirect_uri not found")
+		return
+	}
 	grant_type := query.Get("grant_type")
+	if grant_type == "" {
+		c.Redirect(http.StatusFound, errorPage()+"?error=grant_type not found")
+		return
+	}
 	client_id := query.Get("client_id")
+	if client_id == "" {
+		c.Redirect(http.StatusFound, errorPage()+"?error=client_id not found")
+		return
+	}
 	organization := models.Organization{}
 	models.DB.Where("id = ?", client_id).First(&organization)
 
 	if organization.Id == 0 {
-		c.JSON(http.StatusUnauthorized, redirect_uri+"?error=Organization with client_id not found")
+		c.Redirect(http.StatusFound, errorPage()+"?error=Organization with client_id not found")
 		return
 	}
 	if grant_type == "code" {
 		scope := query.Get("scope")
 		redirects := strings.Split(organization.RedirectURIs, ",")
 		if !helpers.Contains(redirects, redirect_uri) {
-			c.JSON(http.StatusUnauthorized, redirect_uri+"?error=Invalid redirect_uri")
+			c.Redirect(http.StatusFound, errorPage()+"?error=Invalid redirect_uri")
 			return
 		}
 		code := services.GenerateAuthorizationCode(client_id, scope, redirect_uri)
 		redirect_uri = redirect_uri + "?code=" + code.Code
-		c.Redirect(http.StatusOK, redirect_uri)
+		c.Redirect(http.StatusFound, redirect_uri)
 	}
-	c.Redirect(http.StatusUnauthorized, redirect_uri+"?error=Invalid grant_type")
+	c.Redirect(http.StatusFound, errorPage()+"?error=Invalid grant_type")
 }
 
 func AuthorizeToken(c *gin.Context) {
