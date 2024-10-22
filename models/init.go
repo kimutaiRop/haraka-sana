@@ -20,7 +20,7 @@ func ConnectDatabase() {
 		" password=" + os.Getenv("POSTGRES_PASSWORD") +
 		" dbname=" + os.Getenv("POSTGRES_DB") +
 		" port=" + os.Getenv("POSTGRES_PORT") +
-		" sslmode=disable TimeZone=Africa/Nairobi"
+		" sslmode=disable TimeZone=" + os.Getenv("TIME_ZONE")
 	loggerMode := logger.Default.LogMode(logger.Info)
 	if os.Getenv("DEBUG") != "1" {
 		loggerMode = logger.Default.LogMode(logger.Silent)
