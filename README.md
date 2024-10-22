@@ -5,11 +5,17 @@ at 1915HRS
 
 ![project arhitecture](https://github.com/kimutaiRop/haraka-sana/blob/main/architecture.png)
 
-
 ## Dependencies and Stack
+
 - go-lang
-   - Gorm
-   - Gin
+  - Gorm
+  - Gin
 - databases
-    - posgresql
-    - valkey
+  - posgresql
+  - valkey
+
+  #RUNNING DEVELOPMENT SERVER
+  1. start docker to run databases
+    - `docker compose up`
+  2. Start the web server
+    - go run .
