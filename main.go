@@ -5,20 +5,19 @@ import (
 	"haraka-sana/models"
 	"math/rand"
 	"net/http"
+	"os"
+	"strings"
 	"time"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 )
 
 func setupRouter() *gin.Engine {
 	r := gin.Default()
 	r.Use(cors.New(cors.Config{
-		AllowAllOrigins: true,
-		// AllowOrigins:  []string{"http://example.com"},
-		AllowMethods:  []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"},
-		AllowHeaders:  []string{"Authorization", "X-Requested-With", "X-Request-ID", "X-HTTP-Method-Override", "Upload-Length", "Upload-Offset", "Tus-Resumable", "Upload-Metadata", "Upload-Defer-Length", "Upload-Concat", "User-Agent", "Referrer", "Origin", "Content-Type", "Content-Length"},
-		ExposeHeaders: []string{"Upload-Offset", "Location", "Upload-Length", "Tus-Version", "Tus-Resumable", "Tus-Max-Size", "Tus-Extension", "Upload-Metadata", "Upload-Defer-Length", "Upload-Concat", "Location", "Upload-Offset", "Upload-Length"},
+		AllowOrigins: strings.Split(os.Getenv("ALLOW_HOSTS"), ","),
 	}))
 
 	basePath := r.Group("/api/v1")
@@ -33,8 +32,9 @@ func setupRouter() *gin.Engine {
 }
 
 func main() {
-	rand.Seed(time.Now().UnixNano())
+	godotenv.Load()
 
+	rand.Seed(time.Now().UnixNano())
 	models.ConnectDatabase()
 	models.SeedDatabase()
 	r := gin.Default()
