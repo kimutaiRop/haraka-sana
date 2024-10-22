@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -14,7 +13,6 @@ var DB *gorm.DB
 
 func ConnectDatabase() {
 	println("Connecting to database...")
-	godotenv.Load()
 	dsn := "host=" + os.Getenv("POSTGRES_HOST") +
 		" user=" + os.Getenv("POSTGRES_USER") +
 		" password=" + os.Getenv("POSTGRES_PASSWORD") +

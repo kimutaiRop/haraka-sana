@@ -1,10 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"haraka-sana/controller"
 	"haraka-sana/models"
 	"math/rand"
-	"net/http"
 	"os"
 	"strings"
 	"time"
@@ -25,23 +25,20 @@ func setupRouter() *gin.Engine {
 	{
 		oauth2 := basePath.Group("/oauth2")
 		oauth2.GET("/authorize", controller.AuthorizeCode)
-		oauth2.GET("/token", controller.AuthorizeToken)
-		oauth2.GET("/client-credentials", controller.ClientCredentials)
+		oauth2.POST("/token", controller.AuthorizeToken)
+		oauth2.POST("/client-credentials", controller.ClientCredentials)
 	}
 	return r
 }
 
 func main() {
 	godotenv.Load()
+	port := ":8080"
 
 	rand.Seed(time.Now().UnixNano())
 	models.ConnectDatabase()
 	models.SeedDatabase()
-	r := gin.Default()
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "pong",
-		})
-	})
-	r.Run()
+	r := setupRouter()
+	fmt.Println("staring at http://0.0.0.0" + port)
+	r.Run(port)
 }
