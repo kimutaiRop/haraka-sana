@@ -15,3 +15,8 @@ type Login struct {
 type RequestPasswordReset struct {
 	Email string `json:"email"`
 }
+
+type SetPassword struct {
+	Token    string `json:"token"`
+	Password string `json:"password"`
+}

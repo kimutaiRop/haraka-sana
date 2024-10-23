@@ -177,7 +177,7 @@ func RequestPasswordReset(c *gin.Context) {
 	getErr := config.DB.Where("email = ?", requestReset.Email).First(&user).Error
 
 	if getErr != nil {
-		c.JSON(http.StatusOK, gin.H{"success": "if account with emails is found email to set password sent"})
+		c.JSON(http.StatusOK, gin.H{"success": "if account with emails is found email to set password is sent"})
 		return
 	}
 
@@ -190,7 +190,7 @@ func RequestPasswordReset(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
-			"success": "if account with emails is found email to set password sent",
+			"success": "if account with emails is found email to set password is sent",
 		})
 		return
 	}
@@ -212,5 +212,27 @@ func RequestPasswordReset(c *gin.Context) {
 		r.SendEmail()
 	}
 
-	c.JSON(200, gin.H{"success": "if account with emails is found email to set password sent"})
+	c.JSON(200, gin.H{"success": "if account with emails is found email to set password is sent"})
+}
+
+func SetStaffPassword(c *gin.Context) {
+	var setPass objects.SetPassword
+	if err := c.ShouldBindJSON(&setPass); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	token := setPass.Token
+	claims, err := services.ValidateVerifyEmailToken(token)
+
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized access: invalid token"})
+		return
+	}
+	config.DB.Model(&models.User{}).Where("email = ?", claims.Email).
+		Updates(map[string]interface{}{
+			"password":       services.HashAndSalt([]byte(setPass.Password)),
+			"email_verified": true,
+		})
+	c.JSON(200, gin.H{"success": "password set successfully"})
 }
