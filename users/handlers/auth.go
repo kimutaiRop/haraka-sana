@@ -80,17 +80,18 @@ func Register(c *gin.Context) {
 	}
 
 	config.DB.Create(&User)
+	url := os.Getenv("FRONTEND_URL") + "/auth/set-password/" + email_token
 	templateData := struct {
 		Name    string
 		Link    string
 		Company string
 	}{
 		Name:    createUser.Username,
-		Link:    os.Getenv("FRONTEND_URL") + "/auth/set-password/" + email_token,
+		Link:    url,
 		Company: os.Getenv("COMPANY_NAME"),
 	}
 
-	r := helpers.NewRequest([]string{User.Email}, "Hello "+createUser.Username, "Activate your Account with Using link: "+email_token)
+	r := helpers.NewRequest([]string{User.Email}, "Hello "+createUser.Username, "Activate your Account with Using link: "+url)
 	if err := r.ParseTemplate("templates/emails/verify-account.html", templateData); err != nil {
 		c.JSON(500, gin.H{
 			"warning": "error sending email",
@@ -161,4 +162,55 @@ func UserLogin(c *gin.Context) {
 		"token": token,
 		"user":  user,
 	})
+}
+
+func RequestPasswordReset(c *gin.Context) {
+
+	var requestReset objects.RequestPasswordReset
+	if err := c.ShouldBindJSON(&requestReset); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	var user models.User
+
+	getErr := config.DB.Where("email = ?", requestReset.Email).First(&user).Error
+
+	if getErr != nil {
+		c.JSON(http.StatusOK, gin.H{"success": "if account with emails is found email to set password sent"})
+		return
+	}
+
+	email_token, err := services.GenerateVerifyEmailToken(services.VerifyClaims{
+		Email: user.Email,
+		StandardClaims: &jwt.StandardClaims{
+			ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
+		},
+	})
+
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"success": "if account with emails is found email to set password sent",
+		})
+		return
+	}
+	url := os.Getenv("FRONTEND_URL") + "/auth/set-password/" + email_token
+	templateData := struct {
+		Name    string
+		URL     string
+		Company string
+	}{
+		Name:    user.Username,
+		URL:     url,
+		Company: os.Getenv("COMPANY_NAME"),
+	}
+
+	r := helpers.NewRequest([]string{user.Email}, "Hello "+user.Username,
+		"Set your password by clicking on this link"+url)
+
+	if err := r.ParseTemplate("templates/set-password.html", templateData); err == nil {
+		r.SendEmail()
+	}
+
+	c.JSON(200, gin.H{"success": "if account with emails is found email to set password sent"})
 }
