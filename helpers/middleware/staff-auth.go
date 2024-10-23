@@ -45,10 +45,27 @@ func StaffJWTAuthMiddleware() gin.HandlerFunc {
 	}
 }
 
-func StaffHasPermission(permission string, staffID string) bool {
+func PermissionMiddleware(permission string) gin.HandlerFunc {
+
+	return func(c *gin.Context) {
+		contextStaff, _ := c.Get("staff")
+
+		staff := contextStaff.(staffModel.Staff)
+
+		hasPemission := StaffHasPermission(permission, staff.Id)
+		if !hasPemission {
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"error": "Insufficient permission",
+			})
+		}
+
+	}
+}
+
+func StaffHasPermission(permission string, staffID int) bool {
 	// Get staff
 	var staff staffModel.Staff
-	config.DB.Where("id = ?", staffID).First(&staff)
+	config.DB.Where(&staffModel.Staff{Id: staffID}).First(&staff)
 
 	var permissionID int
 	result := config.DB.Model(&permissionsModel.Permission{}).Where("name = ?", permission).Select("id").Scan(&permissionID)

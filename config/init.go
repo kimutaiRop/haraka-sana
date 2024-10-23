@@ -5,6 +5,7 @@ import (
 	oauthModels "haraka-sana/oauth/models"
 	ordersModels "haraka-sana/orders/models"
 	permissionsModel "haraka-sana/permissions/models"
+	staffModels "haraka-sana/staff/models"
 	userModels "haraka-sana/users/models"
 	"os"
 
@@ -46,6 +47,9 @@ func ConnectDatabase() {
 		&permissionsModel.PositionPermission{},
 
 		&userModels.User{},
+
+		&staffModels.Staff{},
+
 		&ordersModels.Step{},
 		&ordersModels.OrderEvents{},
 		&ordersModels.Customer{},
