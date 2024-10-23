@@ -34,7 +34,7 @@ func AuthorizeCode(c *gin.Context) {
 		c.Redirect(http.StatusFound, errorPage()+"?error=client_id not found")
 		return
 	}
-	organization := models.Organization{}
+	organization := models.OraganizationApplication{}
 	config.DB.Where("id = ?", client_id).First(&organization)
 
 	if organization.Id == 0 {
@@ -56,12 +56,19 @@ func AuthorizeCode(c *gin.Context) {
 }
 
 func AuthorizeToken(c *gin.Context) {
-	query := c.Request.URL.Query()
-	redirect_uri := query.Get("redirect_uri")
 
-	grant_type := query.Get("grant_type")
-	client_id := query.Get("client_id")
-	organization := models.Organization{}
+	var tokenAuth objects.TokenAuth
+
+	err := c.ShouldBindJSON(&tokenAuth)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+	redirect_uri := tokenAuth.RedirectURI
+
+	grant_type := tokenAuth.GrantType
+	client_id := tokenAuth.ClientID
+	organization := models.OraganizationApplication{}
 	config.DB.Where("id = ?", client_id).First(&organization)
 
 	if organization.Id == 0 {
@@ -69,8 +76,8 @@ func AuthorizeToken(c *gin.Context) {
 		return
 	}
 	if grant_type == "authorization_code" {
-		code := query.Get("code")
-		scope := query.Get("scope")
+		code := tokenAuth.Code
+		scope := tokenAuth.Scope
 		redirects := strings.Split(organization.RedirectURIs, ",")
 		if !helpers.Contains(redirects, redirect_uri) {
 			c.JSON(http.StatusForbidden, gin.H{
@@ -132,7 +139,7 @@ func ClientCredentials(c *gin.Context) {
 			"errror": "invalid grant_type",
 		})
 	}
-	organization := models.Organization{}
+	organization := models.OraganizationApplication{}
 	config.DB.Where("id = ?", clientCred.ClientId).First(&organization)
 
 	if organization.Id == 0 || organization.ClientSecret != clientCred.ClientSecret {

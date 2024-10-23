@@ -16,7 +16,7 @@ type Grant struct {
 
 var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 
-func generateRandomString(n int) string {
+func GenerateRandomString(n int) string {
 	b := make([]rune, n)
 	for i := range b {
 		b[i] = letterRunes[rand.Intn(len(letterRunes))]
@@ -26,7 +26,7 @@ func generateRandomString(n int) string {
 
 func GenerateAuthorizationCode(clientID, scope, redirectURI string) oauthModel.Code {
 	// Generate a random string for the authorization code
-	code := generateRandomString(32)
+	code := GenerateRandomString(32)
 	grantCode := oauthModel.Code{}
 	grantCode.Code = code
 	grantCode.Scope = scope
@@ -41,7 +41,7 @@ func CreateUniqueToken(db *gorm.DB) (*oauthModel.AuthorizationToken, error) {
 	var token oauthModel.AuthorizationToken
 	for {
 		// Generate a new token
-		authToken := generateRandomString(64)
+		authToken := GenerateRandomString(64)
 
 		// Check if the token already exists
 		err := db.Where("code = ?", authToken).First(&token).Error

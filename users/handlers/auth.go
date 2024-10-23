@@ -45,13 +45,14 @@ func Register(c *gin.Context) {
 	}
 
 	var foundUser models.User
-	config.DB.Where("email = ?", createUser.Email).First(&foundUser)
-	if foundUser.Id != 0 {
+	config.DB.Where(&models.User{Email: createUser.Email}).
+		Or(&models.User{Username: createUser.Username}).
+		First(&foundUser)
+	if foundUser.Id != 0 && foundUser.Email == createUser.Email {
 		c.JSON(400, gin.H{"error": "User with email already exists"})
 		return
 	}
-	config.DB.Where("username = ?", createUser.Username).First(&foundUser)
-	if foundUser.Id != 0 {
+	if foundUser.Id != 0 && foundUser.Username == createUser.Username {
 		c.JSON(400, gin.H{"error": "User with username already exists"})
 		return
 	}
@@ -120,8 +121,8 @@ func UserLogin(c *gin.Context) {
 		return
 	}
 	var user models.User
-	err := config.DB.Where("username = ?", loginUser.Username).
-		Or("email = ?", loginUser.Username).
+	err := config.DB.Where(&models.User{Username: loginUser.Username}).
+		Or(&models.User{Email: loginUser.Username}).
 		Preload("Position").
 		First(&user).
 		Error
@@ -173,7 +174,7 @@ func RequestPasswordReset(c *gin.Context) {
 
 	var user models.User
 
-	getErr := config.DB.Where("email = ?", requestReset.Email).First(&user).Error
+	getErr := config.DB.Where(&models.User{Username: requestReset.Email}).First(&user).Error
 
 	if getErr != nil {
 		c.JSON(http.StatusOK, gin.H{"success": "if account with emails is found email to set password is sent"})
@@ -228,7 +229,7 @@ func SetUserPassword(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized access: invalid token"})
 		return
 	}
-	config.DB.Model(&models.User{}).Where("email = ?", claims.Email).
+	config.DB.Model(&models.User{}).Where(&models.User{Email: claims.Email}).
 		Updates(map[string]interface{}{
 			"password":       services.HashAndSalt([]byte(setPass.Password)),
 			"email_verified": true,

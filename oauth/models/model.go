@@ -1,15 +1,21 @@
 package models
 
-import "time"
+import (
+	authModel "haraka-sana/users/models"
+	"time"
+)
 
-type Organization struct {
+type OraganizationApplication struct {
 	Id              int    `gorm:"primary_key" json:"id"`
 	ApplicationName string `json:"application_name"`
 	Website         string `json:"website"`
 	Logo            string `json:"logo"`
 	RedirectURIs    string `json:"redirect_uris"`
 	ClientId        string `json:"client_id"`
-	ClientSecret    string `json:"_"`
+	ClientSecret    string `json:"-"`
+
+	UserId int            `json:"-"`
+	User   authModel.User `json:"user" gorm:"foreignKey:UserId"`
 }
 
 type Code struct {
