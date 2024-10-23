@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	oauthModels "haraka-sana/oauth/models"
+	ordersModels "haraka-sana/orders/models"
 	permissionsModel "haraka-sana/permissions/models"
 	userModels "haraka-sana/users/models"
 	"os"
@@ -45,6 +46,12 @@ func ConnectDatabase() {
 		&permissionsModel.PositionPermission{},
 
 		&userModels.User{},
+		&ordersModels.Step{},
+		&ordersModels.OrderEvents{},
+		&ordersModels.Customer{},
+		&ordersModels.Seller{},
+		&ordersModels.Product{},
+		&ordersModels.Order{},
 	)
 	fmt.Println("Database migrated successfully")
 

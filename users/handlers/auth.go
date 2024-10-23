@@ -5,7 +5,6 @@ import (
 	"haraka-sana/helpers"
 	"haraka-sana/users/models"
 	"haraka-sana/users/objects"
-	"haraka-sana/users/services"
 	"net/http"
 	"os"
 	"time"
@@ -56,7 +55,7 @@ func Register(c *gin.Context) {
 		c.JSON(400, gin.H{"error": "User with username already exists"})
 		return
 	}
-	pass := services.HashAndSalt([]byte(createUser.Password))
+	pass := helpers.HashAndSalt([]byte(createUser.Password))
 
 	User := models.User{
 		Email:     createUser.Email,
@@ -66,7 +65,7 @@ func Register(c *gin.Context) {
 		UpdatedAt: time.Now(),
 		Password:  pass,
 	}
-	email_token, err := services.GenerateVerifyEmailToken(services.VerifyClaims{
+	email_token, err := helpers.GenerateVerifyEmailToken(helpers.VerifyClaims{
 		Email: createUser.Email,
 		StandardClaims: &jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
@@ -92,7 +91,8 @@ func Register(c *gin.Context) {
 		Company: os.Getenv("COMPANY_NAME"),
 	}
 
-	r := helpers.NewRequest([]string{User.Email}, "Hello "+createUser.Username, "Activate your Account with Using link: "+url)
+	r := helpers.NewRequest([]string{User.Email}, "Hello "+createUser.Username,
+		"Activate your Account with Using link: "+url)
 	if err := r.ParseTemplate("templates/emails/verify-account.html", templateData); err != nil {
 		c.JSON(500, gin.H{
 			"warning": "error sending email",
@@ -142,13 +142,14 @@ func UserLogin(c *gin.Context) {
 		return
 	}
 
-	if !services.CheckPasswordHash(loginUser.Password, user.Password) {
+	if !helpers.CheckPasswordHash(loginUser.Password, user.Password) {
 		c.JSON(400, gin.H{"error": "invalid credentials"})
 		return
 	}
 
-	token, err := services.GenerateToken(services.AuthClaims{
-		ID: user.Id,
+	token, err := helpers.GenerateToken(helpers.AuthClaims{
+		ID:          user.Id,
+		AccountType: "user",
 		StandardClaims: &jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
 		},
@@ -181,7 +182,7 @@ func RequestPasswordReset(c *gin.Context) {
 		return
 	}
 
-	email_token, err := services.GenerateVerifyEmailToken(services.VerifyClaims{
+	email_token, err := helpers.GenerateVerifyEmailToken(helpers.VerifyClaims{
 		Email: user.Email,
 		StandardClaims: &jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
@@ -223,7 +224,7 @@ func SetUserPassword(c *gin.Context) {
 	}
 
 	token := setPass.Token
-	claims, err := services.ValidateVerifyEmailToken(token)
+	claims, err := helpers.ValidateVerifyEmailToken(token)
 
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized access: invalid token"})
@@ -231,7 +232,7 @@ func SetUserPassword(c *gin.Context) {
 	}
 	config.DB.Model(&models.User{}).Where(&models.User{Email: claims.Email}).
 		Updates(map[string]interface{}{
-			"password":       services.HashAndSalt([]byte(setPass.Password)),
+			"password":       helpers.HashAndSalt([]byte(setPass.Password)),
 			"email_verified": true,
 		})
 	c.JSON(200, gin.H{"success": "password set successfully"})
