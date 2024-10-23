@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"haraka-sana/config"
 	oauthRoutes "haraka-sana/oauth/routes"
+	authRoutes "haraka-sana/users/routes"
 	"math/rand"
 	"os"
 	"strings"
@@ -22,6 +23,7 @@ func setupRouter() *gin.Engine {
 
 	basePath := r.Group("/api/v1")
 	oauthRoutes.OauthRoutes(basePath)
+	authRoutes.AuthRoutes(basePath)
 	return r
 }
 

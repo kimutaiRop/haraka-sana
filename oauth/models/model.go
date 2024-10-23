@@ -3,7 +3,7 @@ package models
 import "time"
 
 type Organization struct {
-	Id              int    `json:"id"`
+	Id              int    `gorm:"primary_key" json:"id"`
 	ApplicationName string `json:"application_name"`
 	Website         string `json:"website"`
 	Logo            string `json:"logo"`
@@ -13,7 +13,7 @@ type Organization struct {
 }
 
 type Code struct {
-	Id          int
+	Id          int `gorm:"primary_key"`
 	Code        string
 	Scope       string
 	RedirectURI string
@@ -21,7 +21,7 @@ type Code struct {
 }
 
 type AuthorizationToken struct {
-	Id     int
+	Id     int `gorm:"primary_key"`
 	Code   string
 	Expiry time.Time
 }
