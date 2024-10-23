@@ -2,7 +2,6 @@ package helpers
 
 import (
 	"bytes"
-	"fmt"
 	"net/smtp"
 	"os"
 	"strings"
@@ -27,7 +26,6 @@ func (r *Request) ParseTemplate(templateFileName string, data interface{}) error
 		println("read error", err)
 		return err
 	}
-	fmt.Println("template content", buf.String())
 	r.body = buf.String()
 	return nil
 }
