@@ -19,7 +19,7 @@ at 1915HRS
   1. start docker to run databases
     - `docker compose up`
   2. Start the web server
-    - go run .
+    - `go run .`
 
 ## Features
 
