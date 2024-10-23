@@ -24,6 +24,7 @@ func JWTAuthMiddleware() gin.HandlerFunc {
 				"error": "Invalid Account type",
 			})
 		}
+
 		var user models.User
 
 		getErr := config.DB.Where(&models.User{Id: token.ID}).First(&user).Error
@@ -31,6 +32,11 @@ func JWTAuthMiddleware() gin.HandlerFunc {
 		if getErr != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"error": "Auth token is invalid",
+			})
+		}
+		if !user.Active {
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"error": "Account is not active",
 			})
 		}
 		c.Set("user", user)

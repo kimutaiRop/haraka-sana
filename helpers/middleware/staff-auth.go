@@ -35,6 +35,11 @@ func StaffJWTAuthMiddleware() gin.HandlerFunc {
 				"error": "Auth token is invalid",
 			})
 		}
+		if !staff.Active {
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"error": "Account is not active",
+			})
+		}
 		c.Set("staff", staff)
 		c.Next()
 	}
