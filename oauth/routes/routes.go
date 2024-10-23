@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func AuthRoutes(basePath *gin.RouterGroup) {
+func OauthRoutes(basePath *gin.RouterGroup) {
 	oauth2 := basePath.Group("/oauth2")
 	oauth2.GET("/authorize", handlers.AuthorizeCode)
 	oauth2.POST("/token", handlers.AuthorizeToken)

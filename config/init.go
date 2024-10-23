@@ -3,6 +3,8 @@ package config
 import (
 	"fmt"
 	oauthModels "haraka-sana/oauth/models"
+	permissionsModel "haraka-sana/permissions/models"
+	userModels "haraka-sana/users/models"
 	"os"
 
 	"gorm.io/driver/postgres"
@@ -37,6 +39,12 @@ func ConnectDatabase() {
 		&oauthModels.Organization{},
 		&oauthModels.Code{},
 		&oauthModels.AuthorizationToken{},
+
+		&permissionsModel.Position{},
+		&permissionsModel.Permission{},
+		&permissionsModel.PositionPermission{},
+
+		&userModels.User{},
 	)
 	fmt.Println("Database migrated successfully")
 

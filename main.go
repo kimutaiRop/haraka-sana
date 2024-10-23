@@ -21,10 +21,7 @@ func setupRouter() *gin.Engine {
 	}))
 
 	basePath := r.Group("/api/v1")
-
-	{
-		oauthRoutes.AuthRoutes(basePath)
-	}
+	oauthRoutes.OauthRoutes(basePath)
 	return r
 }
 
