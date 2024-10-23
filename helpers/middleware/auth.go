@@ -18,11 +18,15 @@ func JWTAuthMiddleware() gin.HandlerFunc {
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"error": "Auth token is invalid",
 			})
+			c.Abort()
+			return
 		}
 		if token.AccountType != "user" {
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"error": "Invalid Account type",
 			})
+			c.Abort()
+			return
 		}
 
 		var user models.User
@@ -33,6 +37,8 @@ func JWTAuthMiddleware() gin.HandlerFunc {
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"error": "Auth token is invalid",
 			})
+			c.Abort()
+			return
 		}
 		if !user.Active {
 			c.JSON(http.StatusUnauthorized, gin.H{

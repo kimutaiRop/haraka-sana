@@ -6,13 +6,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GetOrders(c *gin.Context){
+func GetOrders(c *gin.Context) {
 
 	contextStaff, _ := c.Get("staff")
 
 	staff := contextStaff.(staffModels.Staff)
 
-	if staff.Active{
+	if staff.Active {
 
 	}
+	return
 }
