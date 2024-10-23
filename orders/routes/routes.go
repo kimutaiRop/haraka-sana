@@ -11,5 +11,6 @@ func OrdersRoutes(basePath *gin.RouterGroup) {
 	ordersRoutes := basePath.Group("/orders")
 	ordersRoutes.Use(middleware.StaffJWTAuthMiddleware())
 
-	ordersRoutes.GET("/", handlers.GetOrders)
+	ordersRoutes.GET("/", handlers.GetOrders).
+		Use(middleware.PermissionMiddleware("view_orders"))
 }

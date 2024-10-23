@@ -58,7 +58,7 @@ func PermissionMiddleware(permission string) gin.HandlerFunc {
 				"error": "Insufficient permission",
 			})
 		}
-
+		c.Next()
 	}
 }
 
