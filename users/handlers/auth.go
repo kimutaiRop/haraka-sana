@@ -109,7 +109,6 @@ func Register(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"success": "account created successfully, email to set password sent",
 	})
-
 }
 
 func UserLogin(c *gin.Context) {
@@ -215,7 +214,7 @@ func RequestPasswordReset(c *gin.Context) {
 	c.JSON(200, gin.H{"success": "if account with emails is found email to set password is sent"})
 }
 
-func SetStaffPassword(c *gin.Context) {
+func SetUserPassword(c *gin.Context) {
 	var setPass objects.SetPassword
 	if err := c.ShouldBindJSON(&setPass); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})

@@ -44,7 +44,7 @@ func NewRequest(to []string, subject, body string) *Request {
 func (r *Request) SendEmail() (bool, error) {
 	fromEmail := r.from
 	fromPass := os.Getenv("SMTP_PASSWORD")
-	auth := smtp.PlainAuth("", fromEmail, fromPass, "smtppro.zoho.com")
+	auth := smtp.PlainAuth("", fromEmail, fromPass, os.Getenv("SMTP_CLIENT"))
 
 	toHeader := strings.Join(r.to, ", ")
 	subject := "Subject: " + r.subject + "\n"
@@ -54,7 +54,7 @@ func (r *Request) SendEmail() (bool, error) {
 	mime := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
 
 	message := []byte(from + to + subject + mime + "\n" + r.body)
-	err := smtp.SendMail("smtppro.zoho.com:587", auth, fromEmail, r.to, message)
+	err := smtp.SendMail(os.Getenv("SMTP_CLIENT")+":"+os.Getenv("SMTP_PORT"), auth, fromEmail, r.to, message)
 	if err != nil {
 		return false, err
 	}
