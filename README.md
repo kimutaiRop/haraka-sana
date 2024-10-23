@@ -14,7 +14,8 @@ at 1915HRS
   - posgresql
   - valkey
 
-  #RUNNING DEVELOPMENT SERVER
+## RUNNING DEVELOPMENT SERVER
+
   1. start docker to run databases
     - `docker compose up`
   2. Start the web server
@@ -22,4 +23,4 @@ at 1915HRS
 
 ## Features
 
-* [ ] Impliment Ouath Authorization & Authentication
+* [ ] Impliment Ouath Authorization & Authentication [Implimentation details](https://aaronparecki.com/oauth-2-simplified/)
