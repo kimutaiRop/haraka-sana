@@ -1,7 +1,8 @@
-package models
+package config
 
 import (
 	"fmt"
+	oauthModels "haraka-sana/oauth/models"
 	"os"
 
 	"gorm.io/driver/postgres"
@@ -33,9 +34,9 @@ func ConnectDatabase() {
 		panic("Failed to connect to database!")
 	}
 	database.AutoMigrate(
-		&Organization{},
-		&Code{},
-		&AuthorizationToken{},
+		&oauthModels.Organization{},
+		&oauthModels.Code{},
+		&oauthModels.AuthorizationToken{},
 	)
 	fmt.Println("Database migrated successfully")
 

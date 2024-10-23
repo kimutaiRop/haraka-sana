@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"haraka-sana/controller"
-	"haraka-sana/models"
+	"haraka-sana/config"
+	oauthRoutes "haraka-sana/oauth/routes"
 	"math/rand"
 	"os"
 	"strings"
@@ -23,10 +23,7 @@ func setupRouter() *gin.Engine {
 	basePath := r.Group("/api/v1")
 
 	{
-		oauth2 := basePath.Group("/oauth2")
-		oauth2.GET("/authorize", controller.AuthorizeCode)
-		oauth2.POST("/token", controller.AuthorizeToken)
-		oauth2.POST("/client-credentials", controller.ClientCredentials)
+		oauthRoutes.AuthRoutes(basePath)
 	}
 	return r
 }
@@ -37,8 +34,8 @@ func main() {
 	rand.Seed(time.Now().UnixNano())
 	mode := os.Getenv("APP_MODE")
 	gin.SetMode(mode)
-	models.ConnectDatabase()
-	models.SeedDatabase()
+	config.ConnectDatabase()
+	config.SeedDatabase()
 	r := setupRouter()
 
 	fmt.Println("staring at http://0.0.0.0" + port)

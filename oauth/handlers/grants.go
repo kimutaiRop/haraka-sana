@@ -1,10 +1,11 @@
-package controller
+package handlers
 
 import (
+	"haraka-sana/config"
 	"haraka-sana/helpers"
-	"haraka-sana/models"
-	"haraka-sana/objects"
-	"haraka-sana/services"
+	"haraka-sana/oauth/models"
+	"haraka-sana/oauth/objects"
+	"haraka-sana/oauth/services"
 	"net/http"
 	"strings"
 	"time"
@@ -34,7 +35,7 @@ func AuthorizeCode(c *gin.Context) {
 		return
 	}
 	organization := models.Organization{}
-	models.DB.Where("id = ?", client_id).First(&organization)
+	config.DB.Where("id = ?", client_id).First(&organization)
 
 	if organization.Id == 0 {
 		c.Redirect(http.StatusFound, errorPage()+"?error=Organization with client_id not found")
@@ -61,7 +62,7 @@ func AuthorizeToken(c *gin.Context) {
 	grant_type := query.Get("grant_type")
 	client_id := query.Get("client_id")
 	organization := models.Organization{}
-	models.DB.Where("id = ?", client_id).First(&organization)
+	config.DB.Where("id = ?", client_id).First(&organization)
 
 	if organization.Id == 0 {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Organization with client_id not found"})
@@ -78,7 +79,7 @@ func AuthorizeToken(c *gin.Context) {
 			return
 		}
 		authCode := models.Code{}
-		models.DB.Where("code = ?", code).First(&authCode)
+		config.DB.Where("code = ?", code).First(&authCode)
 		if authCode.Scope != scope {
 			c.JSON(http.StatusForbidden, gin.H{
 				"errror": "Invalid scope",
@@ -98,14 +99,14 @@ func AuthorizeToken(c *gin.Context) {
 			return
 		}
 
-		token, err := services.CreateUniqueToken(models.DB)
+		token, err := services.CreateUniqueToken(config.DB)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"errror": "Error in our end",
 			})
 			return
 		}
-		models.DB.Save(&token)
+		config.DB.Save(&token)
 
 		c.JSON(http.StatusOK, gin.H{
 			"access_token": token.Code,
@@ -132,7 +133,7 @@ func ClientCredentials(c *gin.Context) {
 		})
 	}
 	organization := models.Organization{}
-	models.DB.Where("id = ?", clientCred.ClientId).First(&organization)
+	config.DB.Where("id = ?", clientCred.ClientId).First(&organization)
 
 	if organization.Id == 0 || organization.ClientSecret != clientCred.ClientSecret {
 		c.JSON(http.StatusUnauthorized, gin.H{
@@ -140,14 +141,14 @@ func ClientCredentials(c *gin.Context) {
 		})
 		return
 	}
-	token, err := services.CreateUniqueToken(models.DB)
+	token, err := services.CreateUniqueToken(config.DB)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"errror": "Error in our end",
 		})
 		return
 	}
-	models.DB.Save(&token)
+	config.DB.Save(&token)
 
 	c.JSON(http.StatusOK, gin.H{
 		"access_token": token.Code,

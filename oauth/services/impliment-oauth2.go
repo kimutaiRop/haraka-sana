@@ -1,7 +1,8 @@
 package services
 
 import (
-	"haraka-sana/models"
+	"haraka-sana/config"
+	oauthModel "haraka-sana/oauth/models"
 	"math/rand"
 	"time"
 
@@ -23,21 +24,21 @@ func generateRandomString(n int) string {
 	return string(b)
 }
 
-func GenerateAuthorizationCode(clientID, scope, redirectURI string) models.Code {
+func GenerateAuthorizationCode(clientID, scope, redirectURI string) oauthModel.Code {
 	// Generate a random string for the authorization code
 	code := generateRandomString(32)
-	grantCode := models.Code{}
+	grantCode := oauthModel.Code{}
 	grantCode.Code = code
 	grantCode.Scope = scope
 	grantCode.RedirectURI = redirectURI
 	grantCode.Expiry = time.Now().Add(10 * time.Minute)
 
-	models.DB.Save(&grantCode)
+	config.DB.Save(&grantCode)
 	return grantCode
 }
 
-func CreateUniqueToken(db *gorm.DB) (*models.AuthorizationToken, error) {
-	var token models.AuthorizationToken
+func CreateUniqueToken(db *gorm.DB) (*oauthModel.AuthorizationToken, error) {
+	var token oauthModel.AuthorizationToken
 	for {
 		// Generate a new token
 		authToken := generateRandomString(64)
