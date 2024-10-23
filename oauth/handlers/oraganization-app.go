@@ -51,5 +51,17 @@ func CreateNewApp(c *gin.Context) {
 		"client_id":    clientId,
 		"clien_secret": clientSecret,
 	})
+}
 
+func GetMyApps(c *gin.Context) {
+	contextUser, _ := c.Get("user")
+	user := contextUser.(userModel.User)
+
+	var orgApps []models.OraganizationApplication
+	config.DB.Where(&models.OraganizationApplication{UserId: user.Id}).
+		Find(&orgApps)
+
+	c.JSON(http.StatusOK, gin.H{
+		"apps": orgApps,
+	})
 }
