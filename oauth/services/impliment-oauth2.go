@@ -1,7 +1,6 @@
 package services
 
 import (
-	"haraka-sana/config"
 	oauthModel "haraka-sana/oauth/models"
 	"math/rand"
 	"time"
@@ -33,7 +32,6 @@ func GenerateAuthorizationCode(clientID, scope, redirectURI string) oauthModel.C
 	grantCode.RedirectURI = redirectURI
 	grantCode.Expiry = time.Now().Add(10 * time.Minute)
 
-	config.DB.Save(&grantCode)
 	return grantCode
 }
 
@@ -46,13 +44,8 @@ func CreateUniqueToken(db *gorm.DB) (*oauthModel.AuthorizationToken, error) {
 		// Check if the token already exists
 		err := db.Where("code = ?", authToken).First(&token).Error
 		if err == gorm.ErrRecordNotFound {
-			// Token does not exist, so we can create it
 			token.Code = authToken
 			token.Expiry = time.Now().Add(1 * time.Hour)
-
-			if err := db.Save(&token).Error; err != nil {
-				return nil, err
-			}
 			return &token, nil
 		} else if err != nil {
 			// Some other error occurred

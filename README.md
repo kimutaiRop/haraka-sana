@@ -24,3 +24,12 @@ at 1915HRS
 ## Features
 
 * [ ] Impliment Ouath Authorization & Authentication [Implimentation details](https://aaronparecki.com/oauth-2-simplified/)
+
+Oauth creds
+```json
+{
+    "clien_secret": "PISnXzaspCkJSSsXJscznbLJmTgHqHrsddCebTQsuSFMYzSvehjZDKbCqDmTItzh",
+    "client_id": "WFTyrSNoxJfLdlrkrPsWgYCQs"
+}
+```
+http://127.0.0.1:8080/api/v1/oauth2/authorize?redirect_uri=http://localhost:3000/haraka-sana&client_id=WFTyrSNoxJfLdlrkrPsWgYCQs&grant_type=code

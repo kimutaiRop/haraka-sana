@@ -7,6 +7,7 @@ import (
 	userModel "haraka-sana/users/models"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/golang-jwt/jwt"
 	"golang.org/x/crypto/bcrypt"
@@ -29,7 +30,8 @@ func GenerateToken(claims AuthClaims) (string, error) {
 }
 
 func ValidateToken(tokenString string) (*AuthClaims, error) {
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+	tokens := strings.Split(tokenString, " ")
+	token, err := jwt.Parse(tokens[1], func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}

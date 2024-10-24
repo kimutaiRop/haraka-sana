@@ -12,16 +12,23 @@ import (
 	"time"
 
 	"github.com/gin-contrib/cors"
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
 
 func setupRouter() *gin.Engine {
+	store := cookie.NewStore([]byte(os.Getenv("SECRET_KEY")))
 	r := gin.Default()
+	r.LoadHTMLGlob("templates/*.html")
+	r.Use(sessions.Sessions("my-session", store))
+
 	r.Use(cors.New(cors.Config{
 		AllowOrigins: strings.Split(os.Getenv("ALLOW_HOSTS"), ","),
 	}))
 
+	authRoutes.SessionAuth(r)
 	basePath := r.Group("/api/v1")
 	oauthRoutes.OauthRoutes(basePath)
 	authRoutes.AuthRoutes(basePath)
@@ -30,6 +37,7 @@ func setupRouter() *gin.Engine {
 }
 
 func main() {
+
 	godotenv.Load()
 	port := ":8080"
 	rand.Seed(time.Now().UnixNano())

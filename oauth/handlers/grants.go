@@ -6,6 +6,7 @@ import (
 	"haraka-sana/oauth/models"
 	"haraka-sana/oauth/objects"
 	"haraka-sana/oauth/services"
+	authModel "haraka-sana/users/models"
 	"net/http"
 	"strings"
 	"time"
@@ -19,6 +20,9 @@ func errorPage() string {
 
 func AuthorizeCode(c *gin.Context) {
 	query := c.Request.URL.Query()
+	userContext, _ := c.Get("user")
+
+	user := userContext.(authModel.User)
 	redirect_uri := query.Get("redirect_uri")
 	if redirect_uri == "" {
 		c.Redirect(http.StatusFound, errorPage()+"?error=redirect_uri not found")
@@ -35,7 +39,9 @@ func AuthorizeCode(c *gin.Context) {
 		return
 	}
 	organization := models.OraganizationApplication{}
-	config.DB.Where("id = ?", client_id).First(&organization)
+	config.DB.Where(&models.OraganizationApplication{
+		ClientId: client_id,
+	}).First(&organization)
 
 	if organization.Id == 0 {
 		c.Redirect(http.StatusFound, errorPage()+"?error=Organization with client_id not found")
@@ -50,6 +56,12 @@ func AuthorizeCode(c *gin.Context) {
 		}
 		code := services.GenerateAuthorizationCode(client_id, scope, redirect_uri)
 		redirect_uri = redirect_uri + "?code=" + code.Code
+
+		code.OrganizationAppID = organization.Id
+		code.UserId = user.Id
+
+		config.DB.Create(&code)
+
 		c.Redirect(http.StatusFound, redirect_uri)
 	}
 	c.Redirect(http.StatusFound, errorPage()+"?error=Invalid grant_type")
@@ -69,7 +81,9 @@ func AuthorizeToken(c *gin.Context) {
 	grant_type := tokenAuth.GrantType
 	client_id := tokenAuth.ClientID
 	organization := models.OraganizationApplication{}
-	config.DB.Where("id = ?", client_id).First(&organization)
+	config.DB.Where(&models.OraganizationApplication{
+		ClientId: client_id,
+	}).First(&organization)
 
 	if organization.Id == 0 {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Organization with client_id not found"})
@@ -85,8 +99,16 @@ func AuthorizeToken(c *gin.Context) {
 			})
 			return
 		}
-		authCode := models.Code{}
-		config.DB.Where("code = ?", code).First(&authCode)
+		var authCode *models.Code
+		config.DB.Where(&models.Code{
+			Code: code,
+		}).First(&authCode)
+		if authCode.Id == 0 {
+			c.JSON(http.StatusForbidden, gin.H{
+				"errror": "Invalid code or expired",
+			})
+			return
+		}
 		if authCode.Scope != scope {
 			c.JSON(http.StatusForbidden, gin.H{
 				"errror": "Invalid scope",
@@ -99,7 +121,7 @@ func AuthorizeToken(c *gin.Context) {
 			})
 			return
 		}
-		if authCode.Id == 0 || authCode.Expiry.After(time.Now()) {
+		if authCode.Id == 0 || authCode.Expiry.Before(time.Now()) {
 			c.JSON(http.StatusForbidden, gin.H{
 				"errror": "Invalid code or Expired",
 			})
@@ -113,8 +135,13 @@ func AuthorizeToken(c *gin.Context) {
 			})
 			return
 		}
-		config.DB.Save(&token)
-
+		token.OrganizationAppID = organization.Id
+		config.DB.Create(&token)
+		if err := config.DB.Delete(&authCode).Error; err != nil {
+			// Handle deletion errors
+			c.HTML(http.StatusInternalServerError, "error.html", gin.H{"error": "Failed to delete code"})
+			return
+		}
 		c.JSON(http.StatusOK, gin.H{
 			"access_token": token.Code,
 			"expires_in":   60 * 60,
@@ -128,9 +155,10 @@ func AuthorizeToken(c *gin.Context) {
 
 func ClientCredentials(c *gin.Context) {
 
-	var clientCred objects.ClientCred
+	var clientCred *objects.ClientCred
 
-	if err := c.ShouldBindJSON(&clientCred); err != nil {
+	err := c.ShouldBindJSON(&clientCred)
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -140,7 +168,9 @@ func ClientCredentials(c *gin.Context) {
 		})
 	}
 	organization := models.OraganizationApplication{}
-	config.DB.Where("id = ?", clientCred.ClientId).First(&organization)
+	config.DB.Where(&models.OraganizationApplication{
+		ClientId: clientCred.ClientId,
+	}).First(&organization)
 
 	if organization.Id == 0 || organization.ClientSecret != clientCred.ClientSecret {
 		c.JSON(http.StatusUnauthorized, gin.H{
@@ -149,13 +179,15 @@ func ClientCredentials(c *gin.Context) {
 		return
 	}
 	token, err := services.CreateUniqueToken(config.DB)
+	token.OrganizationAppID = organization.Id
+
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"errror": "Error in our end",
 		})
 		return
 	}
-	config.DB.Save(&token)
+	config.DB.Create(&token)
 
 	c.JSON(http.StatusOK, gin.H{
 		"access_token": token.Code,

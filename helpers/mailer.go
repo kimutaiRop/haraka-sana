@@ -2,6 +2,7 @@ package helpers
 
 import (
 	"bytes"
+	"fmt"
 	"net/smtp"
 	"os"
 	"strings"
@@ -45,7 +46,6 @@ func (r *Request) SendEmail() (bool, error) {
 	emailIdentity := os.Getenv("EMAIL_IDENTITY")
 	emailClient := os.Getenv("SMTP_CLIENT")
 	emailPort := os.Getenv("SMTP_PORT")
-	auth := smtp.PlainAuth(emailIdentity, fromEmail, fromPass, emailClient)
 
 	toHeader := strings.Join(r.to, ", ")
 	subject := "Subject: " + r.subject + "\n"
@@ -54,7 +54,13 @@ func (r *Request) SendEmail() (bool, error) {
 	// send html email
 	mime := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
 
+	if emailClient == "logs" {
+		fmt.Println(r.body)
+		return true, nil
+	}
 	message := []byte(from + to + subject + mime + "\n" + r.body)
+	auth := smtp.PlainAuth(emailIdentity, fromEmail, fromPass, emailClient)
+
 	err := smtp.SendMail(emailClient+":"+emailPort, auth, fromEmail, r.to, message)
 	if err != nil {
 		return false, err

@@ -14,9 +14,9 @@ import (
 )
 
 func Register(c *gin.Context) {
-	var createUser objects.CreateUser
+	var createUser *objects.CreateUser
 
-	if err := c.ShouldBindJSON(createUser); err != nil {
+	if err := c.ShouldBindJSON(&createUser); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
@@ -123,7 +123,6 @@ func UserLogin(c *gin.Context) {
 	var user models.User
 	err := config.DB.Where(&models.User{Username: loginUser.Username}).
 		Or(&models.User{Email: loginUser.Username}).
-		Preload("Position").
 		First(&user).
 		Error
 
@@ -165,9 +164,32 @@ func UserLogin(c *gin.Context) {
 	})
 }
 
+func VerifyAccount(c *gin.Context) {
+	var verifyAccount *objects.VerifyAccount
+
+	err := c.ShouldBindJSON(&verifyAccount)
+
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	claims, err := helpers.ValidateVerifyEmailToken(verifyAccount.Token)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized access: invalid token"})
+		return
+	}
+	config.DB.Model(&models.User{}).Where(&models.User{Email: claims.Email}).
+		Updates(&models.User{
+			VeriedAt: time.Now(),
+			Active:   true,
+		})
+	c.JSON(200, gin.H{"success": "account verified successfully"})
+}
+
 func RequestPasswordReset(c *gin.Context) {
 
-	var requestReset objects.RequestPasswordReset
+	var requestReset *objects.RequestPasswordReset
 	if err := c.ShouldBindJSON(&requestReset); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -217,7 +239,7 @@ func RequestPasswordReset(c *gin.Context) {
 }
 
 func SetUserPassword(c *gin.Context) {
-	var setPass objects.SetPassword
+	var setPass *objects.SetPassword
 	if err := c.ShouldBindJSON(&setPass); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return

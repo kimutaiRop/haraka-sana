@@ -15,19 +15,25 @@ type OraganizationApplication struct {
 	ClientSecret    string `json:"-"`
 
 	UserId int            `json:"-"`
-	User   authModel.User `json:"user" gorm:"foreignKey:UserId"`
+	User   authModel.User `json:"-" gorm:"foreignKey:UserId"`
 }
 
 type Code struct {
-	Id          int `gorm:"primary_key"`
-	Code        string
-	Scope       string
-	RedirectURI string
-	Expiry      time.Time
+	Id                int `gorm:"primary_key"`
+	Code              string
+	Scope             string
+	RedirectURI       string
+	Expiry            time.Time
+	OrganizationAppID int
+	UserId            int
+	OrganizationApp   OraganizationApplication `gorm:"foreignKey:OrganizationAppID"`
+	User              authModel.User           `gorm:"foreignKey:UserId"`
 }
 
 type AuthorizationToken struct {
-	Id     int `gorm:"primary_key"`
-	Code   string
-	Expiry time.Time
+	Id                int `gorm:"primary_key"`
+	Code              string
+	Expiry            time.Time
+	OrganizationAppID int
+	OrganizationApp   OraganizationApplication `gorm:"foreignKey:OrganizationAppID"`
 }

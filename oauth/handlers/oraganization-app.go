@@ -12,7 +12,7 @@ import (
 )
 
 func CreateNewApp(c *gin.Context) {
-	var createApp objects.CreateApp
+	var createApp *objects.CreateApp
 
 	err := c.ShouldBindJSON(&createApp)
 
@@ -36,16 +36,17 @@ func CreateNewApp(c *gin.Context) {
 	}
 	clientId := services.GenerateRandomString(25)
 	clientSecret := services.GenerateRandomString(64)
-	newApp := models.OraganizationApplication{
+	NewApp := models.OraganizationApplication{
 		ApplicationName: createApp.ApplicationName,
 		Website:         createApp.Website,
 		Logo:            createApp.Logo,
 		RedirectURIs:    createApp.RedirectURIs,
 		ClientId:        clientId,
 		ClientSecret:    clientSecret,
+		UserId:          user.Id,
 	}
 
-	config.DB.Save(&newApp)
+	config.DB.Create(&NewApp)
 
 	c.JSON(http.StatusOK, gin.H{
 		"client_id":    clientId,
