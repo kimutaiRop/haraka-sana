@@ -83,7 +83,8 @@ func StaffHasPermission(permission string, staffID int) bool {
 	}
 	var staffPermission permissionsModel.PositionPermission
 	fmt.Println(staff.PositionID, permissionID)
-	config.DB.Where("position_id = ? AND permission_id = ? AND active = true", staff.PositionID, permissionID).First(&staffPermission)
+	config.DB.Where("position_id = ? AND permission_id = ? AND active = true",
+		staff.PositionID, permissionID).First(&staffPermission)
 
 	return staffPermission.ID != 0
 }

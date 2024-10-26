@@ -12,7 +12,7 @@
         {{ if .Error }}
         <p style="color: red">{{ .Error }}</p>
         {{ end }} {{ if .Message }}
-        <p style="color: red">{{ .Message }}</p>
+        <p style="color: green">{{ .Message }}</p>
         {{ end }}
         <form action="/login" method="POST">
             <label for="username">Username:</label>
