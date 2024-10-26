@@ -35,7 +35,7 @@ type Product struct {
 type Order struct {
 	Id                       int                                `json:"id" gorm:"primary_key"`
 	CustomerId               int                                `json:"-"`
-	OraganizationAppId       int                                `json:"-"`
+	OrganizationAppId        int                                `json:"-"`
 	Customer                 Customer                           `json:"customer" gorm:"foreignKey:CustomerId"`
 	SellerId                 int                                `json:"-"`
 	Seller                   Seller                             `json:"seller" gorm:"foreignKey:SellerId"`
