@@ -2,6 +2,8 @@ package services
 
 import (
 	"fmt"
+	"haraka-sana/config"
+	"haraka-sana/orders/models"
 	"strconv"
 	"strings"
 
@@ -74,4 +76,60 @@ func OrderFilters(c *gin.Context) OrderFilter {
 		PageSize: pageSize,
 		Page:     page,
 	}
+}
+
+func (filters OrderFilter) GetOrders() map[string]any {
+	var orders []models.Order
+
+	var totalCount int64
+
+	if len(filters.Filter) == 0 {
+		config.DB.
+			Offset(filters.Offest).
+			Limit(filters.PageSize).
+			Preload("Customer").
+			Preload("Customer").
+			Preload("Product").
+			Order(filters.OrderBy).
+			Find(&orders)
+
+		config.DB.
+			Model(&models.Order{}).
+			Select("orders.id").
+			Count(&totalCount)
+	} else {
+		config.DB.
+			Where(clause.Where{Exprs: filters.Filter}).
+			Preload("Customer").
+			Preload("Customer").
+			Preload("Product").
+			Order(filters.OrderBy).
+			Find(&orders)
+
+		config.DB.
+			Where(clause.Where{Exprs: filters.Filter}).
+			Model(&models.Order{}).
+			Select("orders.id").
+			Count(&totalCount)
+	}
+	totalPages := 0
+
+	if int(totalCount)%filters.PageSize == 0 {
+		totalPages = int(totalCount) / filters.PageSize
+	} else {
+		totalPages = (int(totalCount) / filters.PageSize) + 1
+	}
+
+	pageInfo := gin.H{
+		"page":        filters.Page,
+		"page_size":   filters.PageSize,
+		"total_count": totalCount,
+		"total_pages": totalPages,
+	}
+
+	return gin.H{
+		"orders":    orders,
+		"page_info": pageInfo,
+	}
+
 }

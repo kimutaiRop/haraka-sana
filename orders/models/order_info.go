@@ -1,5 +1,9 @@
 package models
 
+import (
+	authModel "haraka-sana/oauth/models"
+)
+
 type Customer struct {
 	Id       int    `json:"id" gorm:"primary_key"`
 	FullName string `json:"full_name"`
@@ -29,11 +33,13 @@ type Product struct {
 }
 
 type Order struct {
-	Id         int      `json:"id" gorm:"primary_key"`
-	CustomerId int      `json:"-"`
-	Customer   Customer `json:"customer" gorm:"foreignKey:CustomerId"`
-	SellerId   int      `json:"-"`
-	Seller     Seller   `json:"seller" gorm:"foreignKey:SellerId"`
-	Status     string   `json:"status"`
-	Delivered  string   `json:"delivered"`
+	Id                       int                                `json:"id" gorm:"primary_key"`
+	CustomerId               int                                `json:"-"`
+	OraganizationAppId       int                                `json:"-"`
+	Customer                 Customer                           `json:"customer" gorm:"foreignKey:CustomerId"`
+	SellerId                 int                                `json:"-"`
+	Seller                   Seller                             `json:"seller" gorm:"foreignKey:SellerId"`
+	OraganizationApplication authModel.OraganizationApplication `json:"oraganization_application" gorm:"foreignKey:OrganizationAppId"`
+	Status                   string                             `json:"status"`
+	Delivered                string                             `json:"delivered"`
 }
