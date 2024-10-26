@@ -38,8 +38,8 @@ func AuthorizeCode(c *gin.Context) {
 		c.Redirect(http.StatusFound, errorPage()+"?error=client_id not found")
 		return
 	}
-	organization := models.OraganizationApplication{}
-	config.DB.Where(&models.OraganizationApplication{
+	organization := models.OrganizationApplication{}
+	config.DB.Where(&models.OrganizationApplication{
 		ClientId: client_id,
 	}).First(&organization)
 
@@ -80,8 +80,8 @@ func AuthorizeToken(c *gin.Context) {
 
 	grant_type := tokenAuth.GrantType
 	client_id := tokenAuth.ClientID
-	organization := models.OraganizationApplication{}
-	config.DB.Where(&models.OraganizationApplication{
+	organization := models.OrganizationApplication{}
+	config.DB.Where(&models.OrganizationApplication{
 		ClientId: client_id,
 	}).First(&organization)
 
@@ -167,8 +167,8 @@ func ClientCredentials(c *gin.Context) {
 			"errror": "invalid grant_type",
 		})
 	}
-	organization := models.OraganizationApplication{}
-	config.DB.Where(&models.OraganizationApplication{
+	organization := models.OrganizationApplication{}
+	config.DB.Where(&models.OrganizationApplication{
 		ClientId: clientCred.ClientId,
 	}).First(&organization)
 

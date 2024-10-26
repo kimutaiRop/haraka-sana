@@ -38,7 +38,7 @@ func ConnectDatabase() {
 		panic("Failed to connect to database!")
 	}
 	database.AutoMigrate(
-		&oauthModels.OraganizationApplication{},
+		&oauthModels.OrganizationApplication{},
 		&oauthModels.Code{},
 		&oauthModels.AuthorizationToken{},
 

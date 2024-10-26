@@ -26,9 +26,9 @@ func CreateNewApp(c *gin.Context) {
 	contextUser, _ := c.Get("user")
 	user := contextUser.(userModel.User)
 
-	var orgExist models.OraganizationApplication
+	var orgExist models.OrganizationApplication
 
-	config.DB.Where(&models.OraganizationApplication{UserId: user.Id, ApplicationName: createApp.ApplicationName}).
+	config.DB.Where(&models.OrganizationApplication{UserId: user.Id, ApplicationName: createApp.ApplicationName}).
 		First(&orgExist)
 	if orgExist.Id != 0 {
 		c.JSON(400, gin.H{"error": "you already have an application with this name"})
@@ -36,7 +36,7 @@ func CreateNewApp(c *gin.Context) {
 	}
 	clientId := services.GenerateRandomString(25)
 	clientSecret := services.GenerateRandomString(64)
-	NewApp := models.OraganizationApplication{
+	NewApp := models.OrganizationApplication{
 		ApplicationName: createApp.ApplicationName,
 		Website:         createApp.Website,
 		Logo:            createApp.Logo,
@@ -58,8 +58,8 @@ func GetMyApps(c *gin.Context) {
 	contextUser, _ := c.Get("user")
 	user := contextUser.(userModel.User)
 
-	var orgApps []models.OraganizationApplication
-	config.DB.Where(&models.OraganizationApplication{UserId: user.Id}).
+	var orgApps []models.OrganizationApplication
+	config.DB.Where(&models.OrganizationApplication{UserId: user.Id}).
 		Find(&orgApps)
 
 	c.JSON(http.StatusOK, gin.H{

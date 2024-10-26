@@ -9,13 +9,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func OrganizationTokenMiddleware() gin.HandlerFunc {
+func OrganizationApplicationMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		accessToken := c.Request.Header.Get("Authorization")
 		tokens := strings.Split(accessToken, " ")
 		bearer := tokens[1]
 
-		var organization oauthModels.OraganizationApplication
+		var organization oauthModels.OrganizationApplication
 		var oauth oauthModels.AuthorizationToken
 
 		config.DB.Where(&oauthModels.AuthorizationToken{
@@ -30,7 +30,7 @@ func OrganizationTokenMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		config.DB.Where(&oauthModels.OraganizationApplication{
+		config.DB.Where(&oauthModels.OrganizationApplication{
 			Id: oauth.OrganizationAppID,
 		}).First(&organization)
 

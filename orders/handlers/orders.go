@@ -18,9 +18,9 @@ func GetOrders(c *gin.Context) {
 }
 
 func OrganizationGetOrders(c *gin.Context) {
-	contextOrganization, _ := c.Get("organization")
+	contextOrganization, _ := c.Get("orgazation_app")
 
-	organization := contextOrganization.(oauthModel.AuthorizationToken)
+	organization := contextOrganization.(oauthModel.OrganizationApplication)
 	if organization.Id == 0 {
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"error": "Not authorized",

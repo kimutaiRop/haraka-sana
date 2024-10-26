@@ -28,8 +28,8 @@ at 1915HRS
 Oauth creds
 ```json
 {
-    "clien_secret": "PISnXzaspCkJSSsXJscznbLJmTgHqHrsddCebTQsuSFMYzSvehjZDKbCqDmTItzh",
-    "client_id": "WFTyrSNoxJfLdlrkrPsWgYCQs"
+    "clien_secret": "HVvNqUcEoCEMuJUGxKXBehzCqTvTgcXZfzAYjLIsTUqSmnGbZlojjJqhjJZUguEo",
+    "client_id": "nukfagiKxpgaTGnCvZfJbaQNf"
 }
 ```
-http://127.0.0.1:8080/api/v1/oauth2/authorize?redirect_uri=http://localhost:3000/haraka-sana&client_id=WFTyrSNoxJfLdlrkrPsWgYCQs&grant_type=code
+http://127.0.0.1:8080/api/v1/oauth2/authorize?redirect_uri=http://localhost:3000/haraka-sana&client_id=nukfagiKxpgaTGnCvZfJbaQNf&grant_type=code

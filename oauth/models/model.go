@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-type OraganizationApplication struct {
+type OrganizationApplication struct {
 	Id              int    `gorm:"primary_key" json:"id"`
 	ApplicationName string `json:"application_name"`
 	Website         string `json:"website"`
@@ -26,8 +26,8 @@ type Code struct {
 	Expiry            time.Time
 	OrganizationAppID int
 	UserId            int
-	OrganizationApp   OraganizationApplication `gorm:"foreignKey:OrganizationAppID"`
-	User              authModel.User           `gorm:"foreignKey:UserId"`
+	OrganizationApp   OrganizationApplication `gorm:"foreignKey:OrganizationAppID"`
+	User              authModel.User          `gorm:"foreignKey:UserId"`
 }
 
 type AuthorizationToken struct {
@@ -35,5 +35,5 @@ type AuthorizationToken struct {
 	Code              string
 	Expiry            time.Time
 	OrganizationAppID int
-	OrganizationApp   OraganizationApplication `gorm:"foreignKey:OrganizationAppID"`
+	OrganizationApp   OrganizationApplication `gorm:"foreignKey:OrganizationAppID"`
 }
