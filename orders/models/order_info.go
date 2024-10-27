@@ -26,25 +26,25 @@ type Seller struct {
 }
 
 type Product struct {
-	Id      int    `json:"id" gorm:"primary_key"`
-	Size    string `json:"size"`
-	Name    string `json:"name"`
-	Image   string `json:"image"`
-	OrderId string `json:"order_id"`
+	Id    int    `json:"id" gorm:"primary_key"`
+	Size  string `json:"size"`
+	Name  string `json:"name"`
+	Image string `json:"image"`
 }
 
 type Order struct {
-	Id                       int                               `json:"id" gorm:"primary_key"`
-	CustomerId               int                               `json:"-"`
-	Customer                 Customer                          `json:"customer" gorm:"foreignKey:CustomerId"`
-	SellerId                 int                               `json:"-"`
-	Seller                   Seller                            `json:"seller" gorm:"foreignKey:SellerId"`
-	ProductId                int                               `json:"-"`
-	Product                  Product                           `json:"product" gorm:"foreignKey:ProductId"`
-	OrganizationAppId        int                               `json:"-" gorm:"index"`
-	OraganizationApplication authModel.OrganizationApplication `json:"oraganization_application" gorm:"foreignKey:OrganizationAppId"`
-	Status                   string                            `json:"status"`
-	Delivered                bool                              `json:"delivered"`
-	DeliveredAt              time.Time                         `json:"delivered_at"`
-	CreatedAt                time.Time                         `json:"created_at"`
+	Id                      int                               `json:"id" gorm:"primary_key"`
+	SellerOrderId           string                            `json:"order_id"`
+	CustomerId              int                               `json:"-"`
+	Customer                Customer                          `json:"customer" gorm:"foreignKey:CustomerId"`
+	SellerId                int                               `json:"-"`
+	Seller                  Seller                            `json:"seller" gorm:"foreignKey:SellerId"`
+	ProductId               int                               `json:"-"`
+	Product                 Product                           `json:"product" gorm:"foreignKey:ProductId"`
+	OrganizationAppId       int                               `json:"-" gorm:"index"`
+	OrganizationApplication authModel.OrganizationApplication `json:"organization_application" gorm:"foreignKey:OrganizationAppId"`
+	Status                  string                            `json:"status"`
+	Delivered               bool                              `json:"delivered"`
+	DeliveredAt             time.Time                         `json:"delivered_at"`
+	CreatedAt               time.Time                         `json:"created_at"`
 }

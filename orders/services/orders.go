@@ -98,7 +98,8 @@ func (filters OrderFilter) GetOrders() map[string]any {
 			Offset(filters.Offest).
 			Limit(filters.PageSize).
 			Preload("Customer").
-			Preload("Customer").
+			Preload("Seller").
+			Preload("OrganizationApplication").
 			Preload("Product").
 			Order(filters.OrderBy).
 			Find(&orders)
@@ -111,7 +112,8 @@ func (filters OrderFilter) GetOrders() map[string]any {
 		config.DB.
 			Where(clause.Where{Exprs: filters.Filter}).
 			Preload("Customer").
-			Preload("Customer").
+			Preload("Seller").
+			Preload("OrganizationApplication").
 			Preload("Product").
 			Order(filters.OrderBy).
 			Find(&orders)
@@ -136,7 +138,6 @@ func (filters OrderFilter) GetOrders() map[string]any {
 		"total_count": totalCount,
 		"total_pages": totalPages,
 	}
-
 	return gin.H{
 		"orders":    orders,
 		"page_info": pageInfo,

@@ -1,9 +1,11 @@
 package handlers
 
 import (
+	"fmt"
 	"haraka-sana/config"
 	oauthModel "haraka-sana/oauth/models"
 	"haraka-sana/orders/models"
+	"haraka-sana/orders/objects"
 	"haraka-sana/orders/services"
 	"net/http"
 
@@ -50,7 +52,7 @@ func OrganizationCreateOrder(c *gin.Context) {
 		return
 	}
 
-	var orderInfo models.Order
+	var orderInfo objects.CreateOrder
 
 	err := c.ShouldBindJSON(&orderInfo)
 	if err != nil {
@@ -60,9 +62,94 @@ func OrganizationCreateOrder(c *gin.Context) {
 		return
 	}
 
-	config.DB.Create(&orderInfo)
-	c.JSON(http.StatusInternalServerError, gin.H{
-		"success": "Order created successfully, user order id to track order progress",
+	if err := orderInfo.Validate(); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	// check order id not exist
+	var orderExist models.Order
+
+	config.DB.Where(&models.Order{
+		SellerOrderId:     orderInfo.SellerOrderId,
+		OrganizationAppId: organizationApp.Id,
+	}).First(&orderExist)
+
+	if orderExist.Id != 0 {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "You already created order with same order id",
+		})
+		return
+	}
+
+	config.DB.Create(&orderInfo.Product)
+	product := orderInfo.Product
+	seller := orderInfo.Seller
+	customer := orderInfo.Customer
+	newProduct := models.Product{
+		Size:  product.Size,
+		Name:  product.Name,
+		Image: product.Image,
+	}
+	err = config.DB.Create(&newProduct).Error
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "error creating order, check product fields and try again",
+		})
+		return
+	}
+	newSeller := models.Seller{
+		Address:  seller.Address,
+		Email:    seller.Email,
+		Phone:    seller.Phone,
+		FullName: seller.FullName,
+		Country:  seller.Country,
+		City:     seller.City,
+	}
+	err = config.DB.Create(&newSeller).Error
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "error creating order, check seller fields and try again",
+		})
+		return
+	}
+
+	newCustomer := models.Customer{
+		FullName: customer.FullName,
+		Country:  customer.Country,
+		City:     customer.City,
+		Address:  customer.Address,
+		Phone:    customer.Phone,
+		Email:    customer.Email,
+	}
+	err = config.DB.Create(&newCustomer).Error
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "error creating order, check customer fields and try again",
+		})
+		return
+	}
+
+	newOrder := models.Order{
+		CustomerId:        newCustomer.Id,
+		ProductId:         newProduct.Id,
+		SellerId:          newSeller.Id,
+		SellerOrderId:     orderInfo.SellerOrderId,
+		OrganizationAppId: organizationApp.Id,
+	}
+	fmt.Println(newOrder)
+	err = config.DB.Create(&newOrder).Error
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error":   "error creating order, check fields and try again",
+			"details": err.Error(),
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"success": "Order created successfully, use order id to track order progress",
 		"order":   orderInfo,
 	})
 }
