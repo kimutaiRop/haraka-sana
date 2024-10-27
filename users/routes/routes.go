@@ -19,6 +19,5 @@ func AuthRoutes(basePath *gin.RouterGroup) {
 func SessionAuth(basePath *gin.Engine) {
 	basePath.GET("/login", handlers.ShowLoginPage)
 	basePath.POST("/login", handlers.SessionLogin)
-	successGroup := basePath.Group("/success").Use(middleware.SessionMiddleware())
-	successGroup.GET("/success", handlers.ShowSuccessPage)
+	basePath.GET("/success", middleware.SessionMiddleware(), handlers.ShowSuccessPage)
 }
