@@ -51,7 +51,7 @@ func ConnectDatabase() {
 		&staffModels.Staff{},
 
 		&ordersModels.Step{},
-		&ordersModels.OrderEvents{},
+		&ordersModels.OrderEvent{},
 		&ordersModels.Customer{},
 		&ordersModels.Seller{},
 		&ordersModels.Product{},

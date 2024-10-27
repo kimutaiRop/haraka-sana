@@ -27,6 +27,7 @@ func OrderFilters(c *gin.Context) OrderFilter {
 
 	from_date := query.Get("from_date")
 	to_date := query.Get("to_date")
+	delivered := query.Get("delivered")
 	status := query.Get("status")
 	search := query.Get("search")
 	if from_date != "" {
@@ -34,7 +35,16 @@ func OrderFilters(c *gin.Context) OrderFilter {
 		m = append(m, clause.Gte{Column: "created_at", Value: from_date})
 	}
 
+	if delivered == "true" {
+		m = append(m, clause.Eq{Column: "delivered", Value: true})
+	}
+	if delivered == "false" {
+		m = append(m, clause.Eq{Column: "delivered", Value: false})
+	}
+
 	if search != "" {
+		m_or = append(m_or, clause.Like{Column: "product_name", Value: "%" + search + "%"})
+
 		m = append(m, clause.Or(m_or...))
 	}
 

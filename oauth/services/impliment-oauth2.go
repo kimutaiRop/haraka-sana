@@ -13,7 +13,7 @@ type Grant struct {
 	ExpiresIn   int    `json:"expires_in"`
 }
 
-var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+var letterRunes = []rune("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 
 func GenerateRandomString(n int) string {
 	b := make([]rune, n)
@@ -39,7 +39,7 @@ func CreateUniqueToken(db *gorm.DB) (*oauthModel.AuthorizationToken, error) {
 	var token oauthModel.AuthorizationToken
 	for {
 		// Generate a new token
-		authToken := GenerateRandomString(64)
+		authToken := GenerateRandomString(150)
 
 		// Check if the token already exists
 		err := db.Where("code = ?", authToken).First(&token).Error

@@ -16,7 +16,6 @@ func SessionMiddleware() gin.HandlerFunc {
 		session := sessions.Default(c)
 		userSession := session.Get("user")
 
-		// Check if userSession is nil
 		if userSession == nil {
 			c.Redirect(http.StatusSeeOther, "/login")
 			c.Abort()

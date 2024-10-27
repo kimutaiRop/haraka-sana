@@ -11,7 +11,7 @@ type Step struct {
 	StepIndex int    `json:"step_index"`
 }
 
-type OrderEvents struct {
+type OrderEvent struct {
 	Id        int             `json:"id" gorm:"primary_key"`
 	OrderId   int             `json:"-"`
 	Order     Order           `json:"order" gorm:"foreignKey:OrderId"`

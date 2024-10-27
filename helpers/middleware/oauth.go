@@ -5,6 +5,7 @@ import (
 	oauthModels "haraka-sana/oauth/models"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -21,10 +22,16 @@ func OrganizationApplicationMiddleware() gin.HandlerFunc {
 		config.DB.Where(&oauthModels.AuthorizationToken{
 			Code: bearer,
 		}).First(&oauth)
-
+		if oauth.Expiry.Before(time.Now()) {
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"error": "Invalid access token or expired",
+			})
+			c.Abort()
+			return
+		}
 		if oauth.Id == 0 {
 			c.JSON(http.StatusUnauthorized, gin.H{
-				"error": "Unauthorizes App access",
+				"error": "Unauthorized App access",
 			})
 			c.Abort()
 			return
@@ -36,7 +43,7 @@ func OrganizationApplicationMiddleware() gin.HandlerFunc {
 
 		if organization.Id == 0 {
 			c.JSON(http.StatusUnauthorized, gin.H{
-				"error": "Unauthorizes App access",
+				"error": "Unauthorized App access",
 			})
 			c.Abort()
 			return

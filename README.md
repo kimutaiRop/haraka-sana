@@ -16,20 +16,32 @@ at 1915HRS
 
 ## RUNNING DEVELOPMENT SERVER
 
-  1. start docker to run databases
-    - `docker compose up`
-  2. Start the web server
-    - `go run .`
+1. start docker to run databases
+
+   - `docker compose up`
+
+2. Start the web server
+
+   - `go run .`
 
 ## Features
 
-* [ ] Impliment Ouath Authorization & Authentication [Implimentation details](https://aaronparecki.com/oauth-2-simplified/)
+- [x] Impliment Ouath Authorization & Authentication [Implimentation details](https://aaronparecki.com/oauth-2-simplified/)
+- [ ] Third patry integration and order creating
+- [ ] Agent Integrations
+- [ ] Alert Third patry Application progress
+- [ ] Location Tracking System
+- [ ] Local Agent Ditsribution Sytem (Same direction Same person)
+- [ ] Admin/Staff managemnt system
+- [ ] Agent Distibution App / web app
 
-Oauth creds
+  Oauth creds
+
 ```json
 {
-    "clien_secret": "HVvNqUcEoCEMuJUGxKXBehzCqTvTgcXZfzAYjLIsTUqSmnGbZlojjJqhjJZUguEo",
-    "client_id": "nukfagiKxpgaTGnCvZfJbaQNf"
+  "clien_secret": "HVvNqUcEoCEMuJUGxKXBehzCqTvTgcXZfzAYjLIsTUqSmnGbZlojjJqhjJZUguEo",
+  "client_id": "nukfagiKxpgaTGnCvZfJbaQNf"
 }
 ```
+
 http://127.0.0.1:8080/api/v1/oauth2/authorize?redirect_uri=http://localhost:3000/haraka-sana&client_id=nukfagiKxpgaTGnCvZfJbaQNf&grant_type=code

@@ -2,6 +2,7 @@ package models
 
 import (
 	authModel "haraka-sana/oauth/models"
+	"time"
 )
 
 type Customer struct {
@@ -40,8 +41,10 @@ type Order struct {
 	Seller                   Seller                            `json:"seller" gorm:"foreignKey:SellerId"`
 	ProductId                int                               `json:"-"`
 	Product                  Product                           `json:"product" gorm:"foreignKey:ProductId"`
-	OrganizationAppId        int                               `json:"-"`
+	OrganizationAppId        int                               `json:"-" gorm:"index"`
 	OraganizationApplication authModel.OrganizationApplication `json:"oraganization_application" gorm:"foreignKey:OrganizationAppId"`
 	Status                   string                            `json:"status"`
-	Delivered                string                            `json:"delivered"`
+	Delivered                bool                              `json:"delivered"`
+	DeliveredAt              time.Time                         `json:"delivered_at"`
+	CreatedAt                time.Time                         `json:"created_at"`
 }
