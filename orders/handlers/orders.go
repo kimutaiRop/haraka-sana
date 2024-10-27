@@ -150,6 +150,5 @@ func OrganizationCreateOrder(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"success": "Order created successfully, use order id to track order progress",
-		"order":   orderInfo,
 	})
 }
