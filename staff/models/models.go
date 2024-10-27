@@ -7,21 +7,18 @@ import (
 
 type Staff struct {
 	Id           int       `gorm:"primary_key" json:"id"`
-	Username     string    `json:"username"`
 	Email        string    `json:"email"`
-	FrstName     string    `json:"firtname"`
+	FirstName    string    `json:"firtname"`
 	LastName     string    `json:"lastname"`
 	Password     string    `json:"-"`
 	Active       bool      `json:"active"`
-	VeriedAt     time.Time `json:"veried_at"`
-	Location     string    `json:"location"`
+	VerifiedAt   time.Time `json:"verified_at"`
+	Country      string    `json:"country"`
+	City         string    `json:"city"`
 	ProfileImage string    `json:"profile_image"`
 	Phone        string    `json:"phone"`
 	IDNumber     string    `json:"id_number"`
 	EmployeeId   string    `json:"employee_id"`
-
-	Station string `json:"station"`
-	Role    string `json:"role"`
 
 	PositionID int                       `json:"-"`
 	Position   permissionsModel.Position `json:"position" gorm:"foreignKey:PositionID"`

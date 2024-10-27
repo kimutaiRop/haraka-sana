@@ -21,7 +21,8 @@ type AuthClaims struct {
 
 type VerifyClaims struct {
 	*jwt.StandardClaims
-	Email string `json:"email"`
+	Email       string `json:"email"`
+	AccountType string `json:"account_type"`
 }
 
 func GenerateToken(claims AuthClaims) (string, error) {

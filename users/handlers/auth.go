@@ -24,13 +24,13 @@ func Register(c *gin.Context) {
 	if createUser.Email == "" {
 		errors = append(errors, gin.H{
 			"field": "fullname",
-			"error": "username is required",
+			"error": "Email is required",
 		})
 	}
 	if createUser.Username == "" {
 		errors = append(errors, gin.H{
 			"field": "email",
-			"error": "email is required"})
+			"error": "Username is required"})
 	}
 	if createUser.ConfirmPassword != createUser.Password {
 		errors = append(errors, gin.H{
@@ -80,7 +80,7 @@ func Register(c *gin.Context) {
 	}
 
 	config.DB.Create(&User)
-	url := os.Getenv("FRONTEND_URL") + "/auth/set-password/" + email_token
+	url := os.Getenv("FRONTEND_URL") + "/auth/verify-account/" + email_token
 	templateData := struct {
 		Name    string
 		Link    string

@@ -5,6 +5,7 @@ import (
 	"haraka-sana/config"
 	oauthRoutes "haraka-sana/oauth/routes"
 	ordersRoutes "haraka-sana/orders/routes"
+	staffRoutes "haraka-sana/staff/routes"
 	authRoutes "haraka-sana/users/routes"
 	"math/rand"
 	"os"
@@ -33,6 +34,7 @@ func setupRouter() *gin.Engine {
 	oauthRoutes.OauthRoutes(basePath)
 	authRoutes.AuthRoutes(basePath)
 	ordersRoutes.OrdersRoutes(basePath)
+	staffRoutes.StaffRoutes(basePath)
 	return r
 }
 

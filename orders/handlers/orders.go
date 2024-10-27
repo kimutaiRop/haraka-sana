@@ -56,14 +56,14 @@ func OrganizationCreateOrder(c *gin.Context) {
 
 	err := c.ShouldBindJSON(&orderInfo)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
+		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "error persring information, check fiedls",
 		})
 		return
 	}
 
 	if err := orderInfo.Validate(); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
+		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
 		})
 		return
@@ -78,7 +78,7 @@ func OrganizationCreateOrder(c *gin.Context) {
 	}).First(&orderExist)
 
 	if orderExist.Id != 0 {
-		c.JSON(http.StatusInternalServerError, gin.H{
+		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "You already created order with same order id",
 		})
 		return
@@ -95,7 +95,7 @@ func OrganizationCreateOrder(c *gin.Context) {
 	}
 	err = config.DB.Create(&newProduct).Error
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
+		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "error creating order, check product fields and try again",
 		})
 		return
@@ -110,7 +110,7 @@ func OrganizationCreateOrder(c *gin.Context) {
 	}
 	err = config.DB.Create(&newSeller).Error
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
+		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "error creating order, check seller fields and try again",
 		})
 		return
@@ -126,7 +126,7 @@ func OrganizationCreateOrder(c *gin.Context) {
 	}
 	err = config.DB.Create(&newCustomer).Error
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
+		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "error creating order, check customer fields and try again",
 		})
 		return
@@ -142,7 +142,7 @@ func OrganizationCreateOrder(c *gin.Context) {
 	fmt.Println(newOrder)
 	err = config.DB.Create(&newOrder).Error
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
+		c.JSON(http.StatusBadRequest, gin.H{
 			"error":   "error creating order, check fields and try again",
 			"details": err.Error(),
 		})

@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"haraka-sana/config"
 	"haraka-sana/helpers/middleware"
 	"haraka-sana/orders/handlers"
 
@@ -11,10 +12,9 @@ func OrdersRoutes(basePath *gin.RouterGroup) {
 	ordersRoutes := basePath.Group("/orders")
 	ordersRoutes.Use(middleware.StaffJWTAuthMiddleware())
 
-	ordersRoutes.GET("", handlers.GetOrders).
-		Use(middleware.PermissionMiddleware("view_orders"))
+	ordersRoutes.GET("", middleware.PermissionMiddleware(config.Permissions.VIEW_ORDERS), handlers.GetOrders)
 
-	oauthAccess := basePath.Group("/app-orders").
+	oauthAccess := basePath.Group("/organization-orders").
 		Use(middleware.OrganizationApplicationMiddleware())
 	oauthAccess.GET("", handlers.OrganizationGetOrders)
 	oauthAccess.POST("/create", handlers.OrganizationCreateOrder)
