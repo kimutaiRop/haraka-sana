@@ -14,8 +14,8 @@ type OrganizationApplication struct {
 	ClientId        string `json:"client_id"`
 	ClientSecret    string `json:"-"`
 
-	UserId int            `json:"-"`
-	User   authModel.User `json:"-" gorm:"foreignKey:UserId"`
+	UserId int             `json:"-"`
+	User   *authModel.User `json:"-" gorm:"foreignKey:UserId"`
 }
 
 type Code struct {
@@ -26,8 +26,8 @@ type Code struct {
 	Expiry            time.Time
 	OrganizationAppID int
 	UserId            int
-	OrganizationApp   OrganizationApplication `gorm:"foreignKey:OrganizationAppID"`
-	User              authModel.User          `gorm:"foreignKey:UserId"`
+	OrganizationApp   *OrganizationApplication `gorm:"foreignKey:OrganizationAppID"`
+	User              *authModel.User          `gorm:"foreignKey:UserId"`
 }
 
 type AuthorizationToken struct {
@@ -35,5 +35,5 @@ type AuthorizationToken struct {
 	Code              string
 	Expiry            time.Time
 	OrganizationAppID int
-	OrganizationApp   OrganizationApplication `gorm:"foreignKey:OrganizationAppID"`
+	OrganizationApp   *OrganizationApplication `gorm:"foreignKey:OrganizationAppID"`
 }

@@ -152,3 +152,51 @@ func OrganizationCreateOrder(c *gin.Context) {
 		"success": "Order created successfully, use order id to track order progress",
 	})
 }
+
+func OrganizationTrackOrder(c *gin.Context) {
+	orderId, _ := c.Params.Get("order_id")
+	contextOrganization, _ := c.Get("orgazation_app")
+
+	organization := contextOrganization.(oauthModel.OrganizationApplication)
+	if organization.Id == 0 {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "Not authorized",
+		})
+		return
+	}
+	order := models.Order{}
+	err := config.DB.
+		// Preload("Customer").
+		// Preload("Seller").
+		// Preload("Product").
+		Where(&models.Order{
+			SellerOrderId:     orderId,
+			OrganizationAppId: organization.Id,
+		}).
+		First(&order).
+		Error
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"error": "Order not found",
+		})
+		return
+	}
+
+	orderEvents := []models.OrderEvent{}
+	config.DB.
+		Where(&models.OrderEvent{
+			OrderId: order.Id,
+		}).
+		Find(&orderEvents)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "Error getting events",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"order":  order,
+		"events": orderEvents,
+	})
+}

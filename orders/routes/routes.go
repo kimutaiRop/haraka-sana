@@ -16,6 +16,7 @@ func OrdersRoutes(basePath *gin.RouterGroup) {
 
 	oauthAccess := basePath.Group("/organization-orders").
 		Use(middleware.OrganizationApplicationMiddleware())
-	oauthAccess.GET("", handlers.OrganizationGetOrders)
 	oauthAccess.POST("/create", handlers.OrganizationCreateOrder)
+	oauthAccess.GET("", handlers.OrganizationGetOrders)
+	oauthAccess.GET("/status/:order_id", handlers.OrganizationTrackOrder)
 }

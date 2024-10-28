@@ -20,8 +20,8 @@ type Staff struct {
 	IDNumber     string    `json:"id_number"`
 	EmployeeId   string    `json:"employee_id"`
 
-	PositionID int                       `json:"-"`
-	Position   permissionsModel.Position `json:"position" gorm:"foreignKey:PositionID"`
+	PositionID int                        `json:"-"`
+	Position   *permissionsModel.Position `json:"position" gorm:"foreignKey:PositionID"`
 
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`

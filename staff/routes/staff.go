@@ -4,7 +4,6 @@ import (
 	"haraka-sana/config"
 	"haraka-sana/helpers/middleware"
 	"haraka-sana/staff/handlers"
-
 	"github.com/gin-gonic/gin"
 )
 
