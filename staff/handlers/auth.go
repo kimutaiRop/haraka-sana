@@ -13,32 +13,40 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
-func CreateStaff(c *gin.Context) {
-	var createStaff *objects.CreateStaff
-
-	if err := c.ShouldBindJSON(&createStaff); err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
-		return
-	}
-	var errors []gin.H
+func CreateStaff(createStaff *objects.CreateStaff) (*models.Staff, gin.H) {
 	if createStaff.Email == "" {
-		errors = append(errors, gin.H{
-			"field": "fullname",
+		error := gin.H{
+			"field": "email",
 			"error": "Email is required",
-		})
+		}
+		return nil, error
+
 	}
 
-	if len(errors) > 0 {
-		c.JSON(400, gin.H{"errors": errors})
-		return
+	if createStaff.FistName == "" {
+		error := gin.H{
+			"field": "firstname",
+			"error": "firstname is required",
+		}
+		return nil, error
+
+	}
+
+	if createStaff.LastName == "" {
+		error := gin.H{
+			"field": "lastname",
+			"error": "firstname is required",
+		}
+		return nil, error
+
 	}
 
 	var foundStaff models.Staff
 	config.DB.Where(&models.Staff{Email: createStaff.Email}).
 		First(&foundStaff)
 	if foundStaff.Id != 0 && foundStaff.Email == createStaff.Email {
-		c.JSON(400, gin.H{"error": "Staff with email already exists"})
-		return
+		return nil, gin.H{"error": "Staff with email already exists"}
+
 	}
 
 	staff := models.Staff{
@@ -47,24 +55,25 @@ func CreateStaff(c *gin.Context) {
 		LastName:   createStaff.LastName,
 		Phone:      createStaff.Phone,
 		Country:    createStaff.Country,
-		City:       createStaff.Country,
+		City:       createStaff.City,
 		PositionID: createStaff.PositionID,
 		Active:     false,
 		CreatedAt:  time.Now(),
 		UpdatedAt:  time.Now(),
 	}
 	email_token, err := helpers.GenerateVerifyEmailToken(helpers.VerifyClaims{
-		Email: createStaff.Email,
+		Email:       createStaff.Email,
+		AccountType: "staff",
 		StandardClaims: &jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
 		},
 	})
 
 	if err != nil {
-		c.JSON(http.StatusOK, gin.H{
+		return nil, gin.H{
 			"sucess":  "account created successfully",
-			"warning": "error generating email verification token"})
-		return
+			"warning": "error generating email verification token"}
+
 	}
 
 	config.DB.Create(&staff)
@@ -82,22 +91,71 @@ func CreateStaff(c *gin.Context) {
 	r := helpers.NewRequest([]string{staff.Email}, "Hello "+staff.FirstName,
 		"Activate your Account with Using link: "+url)
 	if err := r.ParseTemplate("templates/emails/set-password.html", templateData); err != nil {
-		c.JSON(500, gin.H{
+		return nil, gin.H{
 			"warning": "error sending email",
 			"success": "account created successfully",
-		})
-		return
+		}
 	}
 	sent, err := r.SendEmail()
 	if err != nil || !sent {
-		c.JSON(500, gin.H{
+		return nil, gin.H{
 			"warning": "error sending email",
 			"success": "account created successfully",
-		})
+		}
 	}
+
+	return &staff, nil
+}
+
+func CreateAdmin(c *gin.Context) {
+	var createStaff *objects.CreateStaff
+
+	// np other staff must exists
+	var existStaff models.Staff
+
+	config.DB.First(&existStaff)
+
+	if existStaff.Id != 0 {
+		c.JSON(500, gin.H{
+			"error": "Staff Already exist cannot create new",
+		})
+		return
+	}
+
+	if err := c.ShouldBindJSON(&createStaff); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+	staff, res := CreateStaff(createStaff)
+	if res != nil {
+		c.JSON(500, res)
+		return
+	}
+
 	c.JSON(200, gin.H{
+		"staff": staff,
+	})
+
+}
+
+func CreateNewStaff(c *gin.Context) {
+	var createStaff *objects.CreateStaff
+
+	if err := c.ShouldBindJSON(&createStaff); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+	staff, res := CreateStaff(createStaff)
+	if res != nil {
+		c.JSON(500, res)
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"staff":   staff,
 		"success": "account created successfully, email to set password sent",
 	})
+
 }
 
 func StaffLogin(c *gin.Context) {
@@ -135,7 +193,7 @@ func StaffLogin(c *gin.Context) {
 
 	token, err := helpers.GenerateToken(helpers.AuthClaims{
 		ID:          user.Id,
-		AccountType: "user",
+		AccountType: "staff",
 		StandardClaims: &jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
 		},

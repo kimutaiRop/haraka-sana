@@ -68,6 +68,7 @@ func ValidateToken(tokenString string) (*AuthClaims, error) {
 				return nil, fmt.Errorf("account with id not active")
 			}
 		}
+		fmt.Print(claims)
 		id := claims["id"].(float64)
 
 		return &AuthClaims{

@@ -64,5 +64,5 @@ func ConnectDatabase() {
 }
 
 func SeedDatabase() {
-	fmt.Println("Seeding database...")
+	SeedPermissions()
 }

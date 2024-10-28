@@ -7,6 +7,7 @@ type CreateStaff struct {
 	Phone      string `json:"phone"`
 	IDNumber   string `json:"id_number"`
 	Country    string `json:"country"`
+	City       string `json:"city"`
 	PositionID int    `json:"position_id"`
 }
 type StaffSetPassword struct {
