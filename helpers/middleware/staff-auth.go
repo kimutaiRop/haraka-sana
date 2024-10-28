@@ -56,7 +56,7 @@ func PermissionMiddleware(permission string) gin.HandlerFunc {
 
 	return func(c *gin.Context) {
 		contextStaff, _ := c.Get("staff")
-
+		fmt.Print(contextStaff)
 		staff := contextStaff.(staffModel.Staff)
 
 		hasPemission := StaffHasPermission(permission, staff.Id)

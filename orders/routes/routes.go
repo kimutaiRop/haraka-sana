@@ -20,6 +20,9 @@ func OrdersRoutes(basePath *gin.RouterGroup) {
 	oauthAccess.GET("", handlers.OrganizationGetOrders)
 	oauthAccess.GET("/status/:order_id", handlers.OrganizationTrackOrder)
 
-	trackingRoutes := basePath.GET("/tracking")
-	trackingRoutes.POST("/create-step", middleware.PermissionMiddleware(config.Permissions.CREATE_STEP), handlers.CreateTrackingStep)
+	trackingRoutes := basePath.Group("/tracking")
+	trackingRoutes.Use(middleware.StaffJWTAuthMiddleware())
+	trackingRoutes.POST("/record-step",
+		middleware.PermissionMiddleware(config.Permissions.CREATE_STEP),
+		handlers.UpdateOrderStep)
 }

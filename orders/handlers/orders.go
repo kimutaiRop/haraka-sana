@@ -166,9 +166,6 @@ func OrganizationTrackOrder(c *gin.Context) {
 	}
 	order := models.Order{}
 	err := config.DB.
-		// Preload("Customer").
-		// Preload("Seller").
-		// Preload("Product").
 		Where(&models.Order{
 			SellerOrderId:     orderId,
 			OrganizationAppId: organization.Id,
