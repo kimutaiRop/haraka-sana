@@ -6,9 +6,10 @@ import (
 )
 
 type Step struct {
-	Id        int    `json:"id" gorm:"primary_key"`
-	Name      string `json:"name"`
-	StepIndex int    `json:"step_index"`
+	Id             int    `json:"id" gorm:"primary_key"`
+	Name           string `json:"name"`
+	StreamLocation bool   `json:"stream_location"`
+	StepIndex      int    `json:"step_index"`
 }
 
 type OrderEvent struct {
