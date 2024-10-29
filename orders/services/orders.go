@@ -72,7 +72,6 @@ func OrderFilters(c *gin.Context) OrderFilter {
 	orderBy := "id DESC"
 	order_by := query.Get("order_by")
 	if order_by != "" {
-		// with - means descending
 		if strings.HasPrefix(order_by, "-") {
 			orderBy = order_by[1:] + " DESC"
 		} else {

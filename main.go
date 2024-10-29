@@ -7,11 +7,10 @@ import (
 	ordersRoutes "haraka-sana/orders/routes"
 	permissionRoutes "haraka-sana/permissions/routes"
 	staffRoutes "haraka-sana/staff/routes"
+	"haraka-sana/tasks"
 	authRoutes "haraka-sana/users/routes"
-	"math/rand"
 	"os"
 	"strings"
-	"time"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/sessions"
@@ -44,11 +43,12 @@ func main() {
 
 	godotenv.Load()
 	port := ":8080"
-	rand.Seed(time.Now().UnixNano())
 	mode := os.Getenv("APP_MODE")
 	gin.SetMode(mode)
 	config.ConnectDatabase()
+	config.InitValkey()
 	config.SeedDatabase()
+	go tasks.ListenEvents()
 	r := setupRouter()
 
 	fmt.Println("staring at http://0.0.0.0" + port)

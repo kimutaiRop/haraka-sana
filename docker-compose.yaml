@@ -19,5 +19,18 @@ services:
     ports:
       - 8081:8080
 
+  valkey:
+    image: docker.io/bitnami/valkey:8.0
+    container_name: haraka_valkey
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+      - VALKEY_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
+    ports:
+      - "6379:6379"
+    volumes:
+      - "valkey_data:/bitnami/valkey/data"
 volumes:
   db-data:
+    driver: local
+  valkey_data:
+    driver: local

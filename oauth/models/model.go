@@ -16,6 +16,9 @@ type OrganizationApplication struct {
 
 	UserId int             `json:"-"`
 	User   *authModel.User `json:"-" gorm:"foreignKey:UserId"`
+
+	EventsCallbackUrl string `json:"events_callback_url"`
+	Approved          bool   `json:"approved"`
 }
 
 type Code struct {

@@ -7,14 +7,23 @@ import (
 	permissionsModel "haraka-sana/permissions/models"
 	staffModels "haraka-sana/staff/models"
 	userModels "haraka-sana/users/models"
+	"log"
 	"os"
 
+	"github.com/valkey-io/valkey-go"
+	"github.com/valkey-io/valkey-go/valkeycompat"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 )
 
-var DB *gorm.DB
+var (
+	DB *gorm.DB
+
+	ValkeyClient         valkey.Client
+	ValkeyCompat         valkeycompat.Cmdable
+	ORDER_EVENTS_CHANNEL = "order_events_relay"
+)
 
 func ConnectDatabase() {
 	println("Connecting to database...")
@@ -60,6 +69,19 @@ func ConnectDatabase() {
 
 	DB = database
 
+}
+
+func InitValkey() {
+	// connect to valkey
+	valkeyClient, valErr := valkey.NewClient(valkey.ClientOption{InitAddress: []string{os.Getenv("VALKEY_ADDRESS")}})
+	ValkeyCompat = valkeycompat.NewAdapter(valkeyClient)
+
+	if valErr != nil {
+		log.Fatal(valErr)
+	}
+	fmt.Println("Successfully connected to Valkey!")
+
+	ValkeyClient = valkeyClient
 }
 
 func SeedDatabase() {
