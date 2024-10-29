@@ -31,7 +31,7 @@ func (r *Request) ParseTemplate(templateFileName string, data interface{}) error
 	return nil
 }
 
-func NewRequest(to []string, subject, body string) *Request {
+func NewEmailRequest(to []string, subject, body string) *Request {
 	return &Request{
 		to:      to,
 		subject: subject,

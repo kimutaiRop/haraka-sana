@@ -88,7 +88,7 @@ func CreateStaff(createStaff *objects.CreateStaff) (*models.Staff, gin.H) {
 		Company: os.Getenv("COMPANY_NAME"),
 	}
 
-	r := helpers.NewRequest([]string{staff.Email}, "Hello "+staff.FirstName,
+	r := helpers.NewEmailRequest([]string{staff.Email}, "Hello "+staff.FirstName,
 		"Activate your Account with Using link: "+url)
 	if err := r.ParseTemplate("templates/emails/set-password.html", templateData); err != nil {
 		return nil, gin.H{
@@ -323,7 +323,7 @@ func StaffRequestPasswordReset(c *gin.Context) {
 		URL:  os.Getenv("STAFF_PORTAL") + "/auth/set-password/" + email_token,
 	}
 
-	r := helpers.NewRequest([]string{staff.Email}, "Hello "+staff.FirstName,
+	r := helpers.NewEmailRequest([]string{staff.Email}, "Hello "+staff.FirstName,
 		"Set your password by clicking on this link"+
 
 			" "+os.Getenv("STAFF_PORTAL")+"/auth/set-password/"+email_token)

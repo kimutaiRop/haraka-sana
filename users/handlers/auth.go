@@ -91,7 +91,7 @@ func Register(c *gin.Context) {
 		Company: os.Getenv("COMPANY_NAME"),
 	}
 
-	r := helpers.NewRequest([]string{User.Email}, "Hello "+createUser.Username,
+	r := helpers.NewEmailRequest([]string{User.Email}, "Hello "+createUser.Username,
 		"Activate your Account with Using link: "+url)
 	if err := r.ParseTemplate("templates/emails/verify-account.html", templateData); err != nil {
 		c.JSON(500, gin.H{
@@ -228,7 +228,7 @@ func RequestPasswordReset(c *gin.Context) {
 		Company: os.Getenv("COMPANY_NAME"),
 	}
 
-	r := helpers.NewRequest([]string{user.Email}, "Hello "+user.Username,
+	r := helpers.NewEmailRequest([]string{user.Email}, "Hello "+user.Username,
 		"Set your password by clicking on this link"+url)
 
 	if err := r.ParseTemplate("templates/set-password.html", templateData); err == nil {
