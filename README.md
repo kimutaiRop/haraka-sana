@@ -39,8 +39,8 @@ at 1915HRS
 
 ```json
 {
-  "clien_secret": "HVvNqUcEoCEMuJUGxKXBehzCqTvTgcXZfzAYjLIsTUqSmnGbZlojjJqhjJZUguEo",
-  "client_id": "nukfagiKxpgaTGnCvZfJbaQNf"
+    "clien_secret": "r2jJquMfPVbMJtSDQOAttMbtcGMVy8UO8YjrzPTIJeGqmeXcBwMubybjXuYVF4Ec",
+    "client_id": "H1RmmWySlsSGllnT6SYl9Eq1J"
 }
 ```
 

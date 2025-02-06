@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"haraka-sana/config"
 	"haraka-sana/helpers"
 	"haraka-sana/staff/models"
@@ -224,6 +225,7 @@ func SetPassword(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized access: invalid token"})
 		return
 	}
+	fmt.Println("claims.AccountType", claims.AccountType)
 	if claims.AccountType != "staff" {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized access: invalid account type"})
 		return
