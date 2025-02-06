@@ -12,7 +12,7 @@ func StaffRoutes(basePath *gin.RouterGroup) {
 
 	staffRousources := basePath.Group("/staff")
 	staffRousources.Use(middleware.StaffJWTAuthMiddleware())
-	staffRousources.POST("/",
+	staffRousources.GET("",
 		middleware.PermissionMiddleware(config.Permissions.VIEW_STAFF),
 		handlers.GetStaff)
 

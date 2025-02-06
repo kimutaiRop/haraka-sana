@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
 
@@ -89,46 +90,44 @@ func OrderFilters(c *gin.Context) OrderFilter {
 
 func (filters OrderFilter) GetOrders() map[string]any {
 	var orders []models.Order
-
 	var totalCount int64
 
-	if len(filters.Filter) == 0 {
-		config.DB.
-			Offset(filters.Offest).
-			Limit(filters.PageSize).
-			Preload("Customer").
-			Preload("Seller").
-			Preload("OrganizationApplication").
-			Preload("Product").
-			Order(filters.OrderBy).
-			Find(&orders)
+	dbQuery := config.DB // Initialize dbQuery
 
-		config.DB.
-			Model(&models.Order{}).
-			Select("orders.id").
-			Count(&totalCount)
-	} else {
-		config.DB.
-			Where(clause.Where{Exprs: filters.Filter}).
-			Preload("Customer").
-			Preload("Seller").
-			Preload("OrganizationApplication").
-			Preload("Product").
-			Order(filters.OrderBy).
-			Find(&orders)
-
-		config.DB.
-			Where(clause.Where{Exprs: filters.Filter}).
-			Model(&models.Order{}).
-			Select("orders.id").
-			Count(&totalCount)
+	if len(filters.Filter) != 0 { // Apply Where clause conditionally
+		dbQuery = dbQuery.Where(clause.Where{Exprs: filters.Filter})
 	}
-	totalPages := 0
 
-	if int(totalCount)%filters.PageSize == 0 {
-		totalPages = int(totalCount) / filters.PageSize
-	} else {
-		totalPages = (int(totalCount) / filters.PageSize) + 1
+	dbQuery = dbQuery.
+		Preload("Customer").
+		Preload("Seller").
+		Preload("OrganizationApplication").
+		Preload("Product").
+		Order(filters.OrderBy)
+
+	dbQuery.
+		Offset(filters.Offest).
+		Limit(filters.PageSize).
+		Find(&orders)
+
+	config.DB.
+		Scopes(func(d *gorm.DB) *gorm.DB { // Apply same Where clause for count
+			if len(filters.Filter) != 0 {
+				d = d.Where(clause.Where{Exprs: filters.Filter})
+			}
+			return d
+		}).
+		Model(&models.Order{}).
+		Select("orders.id").
+		Count(&totalCount)
+
+	totalPages := 0
+	if filters.PageSize != 0 { // Avoid division by zero if pageSize is 0
+		if int(totalCount)%filters.PageSize == 0 {
+			totalPages = int(totalCount) / filters.PageSize
+		} else {
+			totalPages = (int(totalCount) / filters.PageSize) + 1
+		}
 	}
 
 	pageInfo := gin.H{
@@ -141,5 +140,4 @@ func (filters OrderFilter) GetOrders() map[string]any {
 		"orders":    orders,
 		"page_info": pageInfo,
 	}
-
 }

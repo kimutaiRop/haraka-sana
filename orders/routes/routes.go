@@ -20,9 +20,22 @@ func OrdersRoutes(basePath *gin.RouterGroup) {
 	oauthAccess.GET("", handlers.OrganizationGetOrders)
 	oauthAccess.GET("/status/:order_id", handlers.OrganizationTrackOrder)
 
+	batchRoutes := basePath.Group("/batch")
+	batchRoutes.Use(middleware.StaffJWTAuthMiddleware())
+	batchRoutes.GET("/all",
+		middleware.PermissionMiddleware(config.Permissions.VIEW_ORDERS),
+		handlers.GetBatches)
+	batchRoutes.POST("/create",
+		middleware.PermissionMiddleware(config.Permissions.CREATE_BATCH),
+		handlers.CreateShippingBatch)
+	batchRoutes.POST("/add-order",
+		middleware.PermissionMiddleware(config.Permissions.CREATE_BATCH),
+		handlers.AddProductToBatch)
+
 	trackingRoutes := basePath.Group("/tracking")
 	trackingRoutes.Use(middleware.StaffJWTAuthMiddleware())
 	trackingRoutes.POST("/record-step",
 		middleware.PermissionMiddleware(config.Permissions.CREATE_STEP),
 		handlers.UpdateOrderStep)
+
 }

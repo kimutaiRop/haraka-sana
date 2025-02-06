@@ -57,6 +57,9 @@ func ConnectDatabase() {
 		&ordersModels.Seller{},
 		&ordersModels.Product{},
 		&ordersModels.Order{},
+		&ordersModels.Batch{},
+		&ordersModels.LiveCoordinate{},
+		&ordersModels.BatchOrder{},
 	)
 	fmt.Println("Database migrated successfully")
 

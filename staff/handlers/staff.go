@@ -68,38 +68,27 @@ func GetStaff(c *gin.Context) {
 	}
 	var totalCount int64
 
-	var staff models.Staff
-	if len(m) == 0 {
-		config.DB.
-			Offset(offset).
-			Limit(pageSize).
-			Preload("Customer").
-			Preload("Seller").
-			Preload("OrganizationApplication").
-			Preload("Product").
-			Order(orderBy).
-			Find(&staff)
+	var staff []models.Staff
+	dbQuery := config.DB
 
-		config.DB.
-			Model(&models.Staff{}).
-			Select("orders.id").
-			Count(&totalCount)
-	} else {
-		config.DB.
-			Where(clause.Where{Exprs: m}).
-			Preload("Customer").
-			Preload("Seller").
-			Preload("OrganizationApplication").
-			Preload("Product").
-			Order(orderBy).
-			Find(&staff)
-
-		config.DB.
-			Where(clause.Where{Exprs: m}).
-			Model(&models.Staff{}).
-			Select("orders.id").
-			Count(&totalCount)
+	if len(m) != 0 {
+		dbQuery = dbQuery.Where(clause.Where{Exprs: m})
 	}
+
+	dbQuery.
+		Offset(offset).
+		Limit(pageSize).
+		Order(orderBy).
+		Find(&staff)
+
+	countQuery := config.DB
+	if len(m) != 0 {
+		countQuery = countQuery.Where(clause.Where{Exprs: m})
+	}
+	countQuery.
+		Model(&models.Staff{}).
+		Select("staffs.id").
+		Count(&totalCount)
 	totalPages := 0
 
 	if int(totalCount)%pageSize == 0 {

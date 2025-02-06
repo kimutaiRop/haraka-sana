@@ -14,6 +14,7 @@ func newPermissionsRegistry() *PermissionsRegistry {
 		CREATE_ORDERS: "CREATE ORDERS",
 		VIEW_ORDERS:   "VIEW ORDERS",
 		EDIT_ORDERS:   "EDIT ORDERS",
+		CREATE_BATCH:  "CREATE BATCH",
 
 		VIEW_PERMISSION: "VIEW PERMISSION",
 		EDIT_PERMISSION: "EDIT PERMISSION",
@@ -35,6 +36,7 @@ type PermissionsRegistry struct {
 	CREATE_ORDERS string
 	VIEW_ORDERS   string
 	EDIT_ORDERS   string
+	CREATE_BATCH  string
 
 	VIEW_PERMISSION string
 	EDIT_PERMISSION string

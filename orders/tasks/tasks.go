@@ -41,6 +41,7 @@ func RelayOrderEvents(Message string) {
 	res, err := client.Do(r)
 	if err != nil {
 		fmt.Println(err)
+		//TODO:impliment saving retry for task
 		return
 	}
 
