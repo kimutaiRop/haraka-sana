@@ -96,7 +96,6 @@ func ValidateVerifyEmailToken(tokenString string) (*VerifyClaims, error) {
 		return nil, err
 	}
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		fmt.Println("claims", claims)
 		return &VerifyClaims{
 			Email:       claims["email"].(string),
 			AccountType: claims["account_type"].(string),
