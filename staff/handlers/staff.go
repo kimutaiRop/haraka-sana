@@ -36,8 +36,6 @@ func GetStaff(c *gin.Context) {
 	}
 
 	if search != "" {
-		m_or = append(m_or, clause.Like{Column: "product_name", Value: "%" + search + "%"})
-
 		m = append(m, clause.Or(m_or...))
 	}
 

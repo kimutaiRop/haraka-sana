@@ -78,3 +78,7 @@ func SeedPermissions() {
 		}
 	}
 }
+
+func SeedDatabase() {
+	SeedPermissions()
+}

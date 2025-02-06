@@ -19,7 +19,7 @@ func StaffRoutes(basePath *gin.RouterGroup) {
 	staffRousources.POST("/create",
 		middleware.PermissionMiddleware(config.Permissions.CREATE_STAFF),
 		handlers.CreateNewStaff)
-	staffRousources.POST("/rest-password",
+	staffRousources.POST("/reset-password",
 		middleware.PermissionMiddleware(config.Permissions.EDIT_STAFF),
 		handlers.StaffRequestPasswordReset)
 	staffRousources.POST("/update-status",

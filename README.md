@@ -27,7 +27,7 @@ at 1915HRS
 ## Features
 
 - [x] Impliment Ouath Authorization & Authentication [Implimentation details](https://aaronparecki.com/oauth-2-simplified/)
-- [ ] Third patry integration and order creating
+- [x] Third patry integration and order creating
 - [ ] Agent Integrations
 - [ ] Alert Third patry Application progress
 - [ ] Location Tracking System
