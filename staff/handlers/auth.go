@@ -196,6 +196,7 @@ func StaffLogin(c *gin.Context) {
 		AccountType: "staff",
 		StandardClaims: &jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
+			IssuedAt:  time.Now().Unix(),
 		},
 	})
 	if err != nil {
@@ -305,6 +306,7 @@ func StaffRequestPasswordReset(c *gin.Context) {
 		AccountType: "staff",
 		StandardClaims: &jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
+			IssuedAt:  time.Now().Unix(),
 		},
 	})
 

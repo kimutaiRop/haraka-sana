@@ -69,6 +69,7 @@ func Register(c *gin.Context) {
 		Email: createUser.Email,
 		StandardClaims: &jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
+			IssuedAt:  time.Now().Unix(),
 		},
 	})
 
@@ -151,6 +152,7 @@ func UserLogin(c *gin.Context) {
 		AccountType: "user",
 		StandardClaims: &jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
+			IssuedAt:  time.Now().Unix(),
 		},
 	})
 	if err != nil {
@@ -208,6 +210,7 @@ func RequestPasswordReset(c *gin.Context) {
 		Email: user.Email,
 		StandardClaims: &jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
+			IssuedAt:  time.Now().Unix(),
 		},
 	})
 
