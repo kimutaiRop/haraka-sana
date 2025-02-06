@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"haraka-sana/config"
 	"haraka-sana/orders/models"
 	"haraka-sana/orders/objects"
@@ -45,13 +46,11 @@ func UpdateOrderStep(c *gin.Context) {
 	// notify the orgaization of the new order step
 	go func() {
 		data, err := json.Marshal(orderEvent)
+		fmt.Println(string(data))
 		if err != nil {
 			print("Error Marshalling Data for task: ", config.ORDER_EVENTS_CHANNEL)
 		}
-		resErr := config.ValkeyCompat.Publish(context.TODO(), config.ORDER_EVENTS_CHANNEL, string(data))
-		if resErr != nil {
-			print("Error Delegating task to: ", config.ORDER_EVENTS_CHANNEL)
-		}
+		config.ValkeyCompat.Publish(context.TODO(), config.ORDER_EVENTS_CHANNEL, string(data))
 	}()
 
 	c.JSON(http.StatusOK, gin.H{
